@@ -1,9 +1,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script>
 <script src="tinytest.js"></script>
+<script src="../src/nodes.js"></script>
+<script src="../src/tetromino.js"></script>
 <!--<script src="../src/sketch.js"></script> -->
+<script src="./tetromino-tests.js"></script>
 <script>
   let testObj = {}
-  // Object.assign(testObj, heapTests)
+  Object.assign(testObj, TetrominoTests)
   // Run
   tests(testObj)
 </script>
