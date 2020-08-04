@@ -1,22 +1,22 @@
 /**
  * This is the base object used for each Tetris piece
  */
-const Node = (x, y, color) => {
+const Node = (i, j, color) => {
   const node = {}
 
-  node.x = x
-  node.y = y
+  node.i = i
+  node.j = j
   node.color = color
 
   /**
-   * Returns true if node is in game boundary given by nx, ny
+   * Returns true if node is in game boundary given by ni, nj
    */
-  node.inBounds = (nx, ny) => node.x>=0 && node.x<nx && node.y>=0 && node.y<ny
+  node.inBounds = (ni, nj) => node.i>=0 && node.i<ni && node.j>=0 && node.j<nj
 
   /**
    * Returns true if node's components equal n's components
    */
-  node.eq = n => node.x == n.x && node.y == n.y
+  node.eq = n => node.i == n.i && node.j == n.j
 
   return node
 }
@@ -28,21 +28,15 @@ const NodeSet = () => {
   const ns = {}
   ns.lookup = new Map()
 
-  ns.encXY = (x, y) => `${x},${y}`
+  ns.encIJ = (i, j) => `${i},${j}`
 
-  ns.add = (x, y) => ns.lookup.set(ns.encXY(x,y), Node(x, y))
+  ns.add = node => ns.lookup.set(ns.encIJ(node.i,node.j), node)
 
-  ns.addNode = node => ns.lookup.set(ns.encXY(node.x,node.y), node)
+  ns.delete = node => ns.lookup.delete(ns.encIJ(node.i,node.j))
 
-  ns.delete = (x, y) => ns.lookup.delete(ns.encXY(x,y))
+  ns.has = node => ns.lookup.has(ns.encIJ(node.i,node.j))
 
-  ns.deleteNode = node => ns.lookup.delete(ns.encXY(node.x,node.y))
-
-  ns.has = (x, y) => ns.lookup.has(ns.encXY(x,y))
-
-  ns.hasNode = node => ns.lookup.has(ns.encXY(node.x,node.y))
-
-  ns.get = (x, y) => ns.lookup.get(ns.encXY(x,y))
+  ns.get = (i, j) => ns.lookup.get(ns.encIJ(i,j))
 
   ns.size = () => ns.lookup.size
 
@@ -53,6 +47,22 @@ const NodeSet = () => {
   }
 
   return ns
+}
+
+const Tetromino = {
+  I: (i, j, color) => {
+    const piece = {}
+    piece.i = i
+    piece.j = j
+
+    piece.identity = [
+      Node(0,1,color), Node(1,1,color), Node(2,1,color), Node(3,1,color)
+    ]
+
+    piece.get = () => piece.identity.map(node => Node(node.i+piece.i, node.j+piece.j, node.color))
+
+    return piece
+  }
 }
 
 const Game = {
