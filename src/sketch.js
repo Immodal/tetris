@@ -57,11 +57,22 @@ const sketch = ( p ) => {
 const p5Game = {
   drawState: (p, toX, toY, state) => {
     p5Game.drawNodes(p, toX, toY, state.current.get())
-    p5Game.drawNodes(p, toX, toY, state.stack.lookup)
+    p5Game.drawStack(p, toX, toY, state.stack)
+  },
+
+  drawStack: (p, toX, toY, stack) => {
+    stack.forEach((row, j) => {
+      row.forEach((color, i) => {
+        if(color != null) {
+          p.fill(color)
+          p.rect(toX(i), toY(j), toX(1), toY(1))
+        }
+      })
+    })
   },
   
-  drawNodes: (p, toX, toY, tets) => {
-    tets.forEach(node => {
+  drawNodes: (p, toX, toY, nodes) => {
+    nodes.forEach(node => {
       p.fill(node.color)
       p.rect(toX(node.i), toY(node.j), toX(1), toY(1))
     })

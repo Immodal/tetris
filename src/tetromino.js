@@ -1,3 +1,25 @@
+/**
+ * This is the base object used for each Tetromino
+ */
+const Node = (i, j, color) => {
+  const node = {}
+
+  node.i = i
+  node.j = j
+  node.color = color
+
+  /**
+   * Returns true if node is in game boundary given by ni, nj
+   */
+  node.inBounds = (ni, nj) => node.i>=0 && node.i<ni && node.j>=0 && node.j<nj
+
+  /**
+   * Returns true if node's components equal n's components
+   */
+  node.eq = n => node.i == n.i && node.j == n.j
+
+  return node
+}
 
 const Tetromino = {
   /**
@@ -86,7 +108,7 @@ const Tetromino = {
      * Returns true if the piece in its current position has collided with a node in the stack.
      * @param {*} stack The stack containing all locked pieces
      */
-    piece.isCollided = stack => piece.get().some(node => stack.has(node))
+    piece.isCollided = stack => piece.get().some(node => stack[node.j][node.i]!=null)
 
     return piece
   },

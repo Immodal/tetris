@@ -11,45 +11,53 @@ const Game = {
         ni: ni,
         nj: nj,
         current: Tetromino.I(0,0),
-        stack: NodeSet(),
+        stack: utils.mkFill(ni, nj, null),
       }
     } else {
       let newPiece = state.current.next()
-      let isInvalid = !newPiece.isValid(state.ni, state.nj, state.stack)
-      let newStack = state.stack.copy()
-      if (isInvalid) {
-        newStack.addAll(state.current.get())
-        Game.clearRows(state.ni, state.nj, newStack)
+      let willLock = !newPiece.isValid(state.ni, state.nj, state.stack)
+      if (willLock) {
+        Game.addPiece(state.current, state.stack)
+        Game.clearLines(state.stack)
+        Game.processGravity(state.stack)
       }
       return {
         ni: state.ni,
         nj: state.nj,
-        current: isInvalid ? Game.getRandomTetromino(0,0) : newPiece,
-        stack: newStack,
+        current: willLock ? Game.getRandomPiece(0,0) : newPiece,
+        stack: state.stack,
       }
     }
   },
 
-  getRandomTetromino: (i, j) => {
+  addPiece: (piece, stack) => piece.get().forEach(node => stack[node.j][node.i] = node.color),
+
+  clearLines: stack => {
+    for(let j=stack.length-1; j>=0; j--) {
+      let nFilled = Game.countFilled(stack[j])
+      if (nFilled == 0) break
+      else if (nFilled == stack[0].length) stack[j].forEach((_, i) => stack[j][i] = null)
+    }
+  },
+
+  processGravity: stack => {
+    let nEmpty = 0
+    for(let j=stack.length-1; j>=0; j--) {
+      let nFilled = Game.countFilled(stack[j])
+      if (nFilled==0) nEmpty += 1
+      else if (nFilled>0 && nEmpty>0) {
+        stack[j].forEach((v,i) => {
+          stack[j+nEmpty][i] = v
+          stack[j][i] = null
+        })
+      }
+    }
+  },
+
+  countFilled: row => row.reduce((acc, v) => v!=null ? acc+1 : acc, 0),
+
+  getRandomPiece: (i, j) => {
     let cons = Game.tetrominoFactories[utils.randInt(0, Game.tetrominoFactories.length-1)]
     return cons(i, j)
   },
-
-  clearRows: (ni, nj, stack) => {
-    let linesCleared = 0
-    for(let j=nj-1; j>=0; j--) {
-      let nodes = NodeSet()
-      for(let i=ni-1; i>=0; i--) {
-        if(stack.hasPos(i, j)) {
-          nodes.add(stack.get(i,j))
-        }
-      }
-      if(nodes.size()==ni) {
-        nodes.lookup.forEach(node => stack.delete(node))
-        linesCleared += 1
-      } else if(nodes.size()>0 && linesCleared>0) {
-        nodes.lookup.forEach(node => stack.autoReplace(node.i, node.j, node.i, node.j+linesCleared))
-      }
-    }
-  }
 }
