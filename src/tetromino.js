@@ -49,7 +49,7 @@ const Tetromino = {
     /**
      * Returns a new Piece with its rotation state advanced by 1.
      */
-    piece.rotate = () => piece.next(0, 0, piece.rot+1>=piece.rotations.length ? 0 : piece.rot+1)
+    piece.rotate = () => piece.next(0, 0, piece.rot>=piece.rotations.length-1 ? 0 : piece.rot+1)
 
     return piece
   },
@@ -86,6 +86,45 @@ const Tetromino = {
       [1,1], 
       [1,2], 
       [1,3]
+    ],
+  ],
+
+  /**
+   * Factory Method for the J Tetromino.
+   * @param {int} i Column index of the top left cell of the piece's rotation matrix
+   * @param {int} j Row index of the top left cell of the piece's rotation matrix
+   * @param {int} rot Rotation state of the piece
+   */
+  J: (i, j, rot=0) => {
+    const piece = Tetromino.AbstractPiece(i, j, rot)
+    piece.cons = Tetromino.J
+    piece.color = "#0000FF"
+    piece.rotations = Tetromino.J_ROTATIONS
+
+    return piece
+  },
+
+  /**
+   * Rotation States for J Tetromino.
+   */
+  J_ROTATIONS: [
+    [
+      [0,0], 
+      [0,1], [1,1], [2,1]
+    ],
+    [
+      [1,0],[2,0],
+      [1,1], 
+      [1,2]
+    ],
+    [
+      [0,1], [1,1], [2,1], 
+                    [2,2]
+    ],
+    [
+            [1,0], 
+            [1,1], 
+      [0,2],[1,2],
     ],
   ],
 }

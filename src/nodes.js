@@ -32,6 +32,8 @@ const NodeSet = () => {
 
   ns.add = node => ns.lookup.set(ns.encIJ(node.i,node.j), node)
 
+  ns.addAll = nodes => nodes.forEach(node => ns.add(node))
+
   ns.delete = node => ns.lookup.delete(ns.encIJ(node.i,node.j))
 
   ns.has = node => ns.lookup.has(ns.encIJ(node.i,node.j))

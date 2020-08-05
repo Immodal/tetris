@@ -5,8 +5,6 @@ const sketch = ( p ) => {
   const nJ = () => 20
   const toX = i => Math.floor(i * p.width / nI())
   const toY = i => Math.floor(i * p.height / nJ())
-  const fromX = x => Math.floor(x * nI() / p.width)
-  const fromY = y => Math.floor(y * nJ() / p.height)
 
   let canvas = null
   const initCanvas = () => {
@@ -38,7 +36,7 @@ const sketch = ( p ) => {
   p.draw = () => {
     p.background(240)
     update()
-    p5Game.drawTetromino(p, toX, toY, state)
+    p5Game.drawState(p, toX, toY, state)
   }
 
   /**
@@ -54,12 +52,18 @@ const sketch = ( p ) => {
 }
 
 const p5Game = {
-  drawTetromino: (p, toX, toY, state) => {
-    state.current.get().forEach(node => {
+  drawState: (p, toX, toY, state) => {
+    p5Game.drawNodes(p, toX, toY, state.current.get())
+    p5Game.drawNodes(p, toX, toY, state.pile.lookup)
+  },
+  
+  drawNodes: (p, toX, toY, tets) => {
+    tets.forEach(node => {
       p.fill(node.color)
       p.rect(toX(node.i), toY(node.j), toX(1), toY(1))
     })
   },
+
 }
 
 let p5Instance = new p5(sketch);
