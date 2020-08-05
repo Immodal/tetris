@@ -13,13 +13,16 @@ const sketch = ( p ) => {
   }
 
   const next = Game.next(nI(), nJ())
+  let stateUpdate = {
+    current: null
+  }
   let updateTimer = 0
   let state = next(null)
   const updateDelay = 2000
   const update = (force=false) => {
     if (p.millis() > updateTimer || force) {
       updateTimer = p.millis() + updateDelay
-      state = next(state)
+      state = next(state, stateUpdate)
     }
   }
 
@@ -44,10 +47,10 @@ const sketch = ( p ) => {
    */
   p.keyPressed = () => {
     let piece = state.current
-    if (p.key == "w") state.current = piece.rotate()
-    else if (p.key == "s") update(true)
-    else if (p.key == "d") state.current = piece.right()
-    else if (p.key == "a") state.current = piece.left()
+    if (p.key == "w") stateUpdate.current = piece.rotate()
+    else if (p.key == "s") stateUpdate.current = piece.next()
+    else if (p.key == "d") stateUpdate.current = piece.right()
+    else if (p.key == "a") stateUpdate.current = piece.left()
   }
 }
 
@@ -67,5 +70,3 @@ const p5Game = {
 }
 
 let p5Instance = new p5(sketch);
-
-state = Game.next(null)

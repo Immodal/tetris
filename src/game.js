@@ -4,7 +4,7 @@ const Game = {
     Tetromino.J,
   ],
 
-  next: (ni, nj) => (state=null, update=null) => {
+  next: (ni, nj) => (state=null, update={}) => {
     if (state==null) {
       return {
         ni: ni,
@@ -13,7 +13,12 @@ const Game = {
         pile: NodeSet(),
       }
     } else {
-      let newPiece = state.current.next()
+      let newPiece = state.current
+      if (update.current!=null) {
+        newPiece = update.current
+        update.current = null
+      }
+      
       let willLock = Game.willLock(state.ni, state.nj, newPiece, state.pile)
       let newPile = state.pile.copy()
       if (willLock) newPile.addAll(state.current.get())
