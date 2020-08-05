@@ -10,31 +10,37 @@ const Game = {
         ni: ni,
         nj: nj,
         current: Tetromino.I(0,0),
-        pile: NodeSet(),
+        stack: NodeSet(),
       }
     } else {
-      let newPiece = state.current
-      if (update.current!=null) {
-        newPiece = update.current
-        update.current = null
-      }
-      
-      let willLock = Game.willLock(state.ni, state.nj, newPiece, state.pile)
-      let newPile = state.pile.copy()
-      if (willLock) newPile.addAll(state.current.get())
+      let newPiece = state.current.next()
+      let isInvalid = !Game.isValid(state.ni, state.nj, newPiece.get(), state.stack)
+      let newStack = state.stack.copy()
+      if (isInvalid) newStack.addAll(state.current.get())
       return {
         ni: state.ni,
         nj: state.nj,
-        current: willLock ? Game.getRandomTetromino(0,0) : newPiece,
-        pile: newPile,
+        current: isInvalid ? Game.getRandomTetromino(0,0) : newPiece,
+        stack: newStack,
       }
     }
   },
 
-  willLock: (ni, nj, piece, pile) => {
-    let nodes = piece.get()
-    return nodes.some(node => !node.inBounds(ni, nj)) || nodes.some(node => pile.has(node))
+  leftShift: (ni, nj, piece, stack) => {
+    let p = piece.left()
+    return Game.isValid(ni, nj, p.get(), stack) ? p : piece
   },
+
+  rightShift: (ni, nj, piece, stack) => {
+    let p = piece.right()
+    return Game.isValid(ni, nj, p.get(), stack) ? p : piece
+  },
+
+  isValid: (ni, nj, nodes, stack) => Game.isInBounds(ni, nj, nodes) && !Game.isCollided(nodes, stack),
+
+  isInBounds: (ni, nj, nodes) => nodes.every(node => node.inBounds(ni, nj)),
+
+  isCollided: (nodes, stack) => nodes.some(node => stack.has(node)),
 
   getRandomTetromino: (i, j) => {
     let cons = Game.tetrominoFactories[utils.randInt(0, Game.tetrominoFactories.length-1)]

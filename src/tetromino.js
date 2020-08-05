@@ -49,7 +49,7 @@ const Tetromino = {
     /**
      * Returns a new Piece with its rotation state advanced by 1.
      */
-    piece.rotate = () => piece.next(0, 0, piece.rot>=piece.rotations.length-1 ? 0 : piece.rot+1)
+    piece.cw = () => piece.next(0, 0, piece.rot>=piece.rotations.length-1 ? 0 : piece.rot+1)
 
     return piece
   },
