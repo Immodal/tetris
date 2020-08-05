@@ -18,7 +18,7 @@ const sketch = ( p ) => {
   }
   let updateTimer = 0
   let state = next(null)
-  const updateDelay = 2000
+  const updateDelay = 500
   const update = (force=false) => {
     if (p.millis() > updateTimer || force) {
       updateTimer = p.millis() + updateDelay
@@ -47,10 +47,10 @@ const sketch = ( p ) => {
    */
   p.keyPressed = () => {
     let piece = state.current
-    if (p.key == "w") state.current = piece.cw()
+    if (p.key == "w") state.current = piece.cw(state.ni, state.nj, state.stack)
     else if (p.key == "s") update(true)
-    else if (p.key == "d") state.current = Game.rightShift(state.ni, state.nj, piece, state.stack)
-    else if (p.key == "a") state.current = Game.leftShift(state.ni, state.nj, piece, state.stack)
+    else if (p.key == "a") state.current = piece.left(state.ni, state.nj, state.stack)
+    else if (p.key == "d") state.current = piece.right(state.ni, state.nj, state.stack)
   }
 }
 

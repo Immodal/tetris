@@ -2,6 +2,7 @@ const Game = {
   tetrominoFactories: [
     Tetromino.I,
     Tetromino.J,
+    Tetromino.L,
   ],
 
   next: (ni, nj) => (state=null, update={}) => {
@@ -14,7 +15,7 @@ const Game = {
       }
     } else {
       let newPiece = state.current.next()
-      let isInvalid = !Game.isValid(state.ni, state.nj, newPiece.get(), state.stack)
+      let isInvalid = !newPiece.isValid(state.ni, state.nj, state.stack)
       let newStack = state.stack.copy()
       if (isInvalid) newStack.addAll(state.current.get())
       return {
@@ -25,22 +26,6 @@ const Game = {
       }
     }
   },
-
-  leftShift: (ni, nj, piece, stack) => {
-    let p = piece.left()
-    return Game.isValid(ni, nj, p.get(), stack) ? p : piece
-  },
-
-  rightShift: (ni, nj, piece, stack) => {
-    let p = piece.right()
-    return Game.isValid(ni, nj, p.get(), stack) ? p : piece
-  },
-
-  isValid: (ni, nj, nodes, stack) => Game.isInBounds(ni, nj, nodes) && !Game.isCollided(nodes, stack),
-
-  isInBounds: (ni, nj, nodes) => nodes.every(node => node.inBounds(ni, nj)),
-
-  isCollided: (nodes, stack) => nodes.some(node => stack.has(node)),
 
   getRandomTetromino: (i, j) => {
     let cons = Game.tetrominoFactories[utils.randInt(0, Game.tetrominoFactories.length-1)]
