@@ -18,6 +18,11 @@ const Node = (i, j, color) => {
    */
   node.eq = n => node.i == n.i && node.j == n.j
 
+  /**
+   * Returns a copy of node
+   */
+  node.copy = () => new Node(node.i, node.j, node.color)
+
   return node
 }
 
@@ -36,7 +41,15 @@ const NodeSet = () => {
 
   ns.delete = node => ns.lookup.delete(ns.encIJ(node.i,node.j))
 
+  ns.autoReplace = (iOld, jOld, iNew, jNew) => {
+    let n = ns.get(iOld, jOld)
+    ns.delete(n)
+    ns.add(Node(iNew, jNew, n.color))
+  }
+
   ns.has = node => ns.lookup.has(ns.encIJ(node.i,node.j))
+
+  ns.hasPos = (i, j) => ns.lookup.has(ns.encIJ(i, j))
 
   ns.get = (i, j) => ns.lookup.get(ns.encIJ(i,j))
 
