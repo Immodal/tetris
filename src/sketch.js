@@ -10,6 +10,9 @@ const sketch = ( p ) => {
   const hpfI = 6
   const hpfJ = 4
 
+  /**
+   * Canvas and visual elements inside it
+   */
   let canvas = null
   let pf = null
   let npf = null
@@ -31,10 +34,29 @@ const sketch = ( p ) => {
       hpfI, hpfJ)
   }
 
+  /**
+   * Player Selection Elements
+   */
+  const HUMAN = 0
+  const AI = 1
+  let playerSelect = null
+  const initPlayerSelect = () => {
+    playerSelect = p.createSelect()
+    playerSelect.style('font-size', '13px')
+    playerSelect.parent("#playerSelect")
+    playerSelect.option("Human", HUMAN)
+    playerSelect.option("AI", AI)
+    playerSelect.value(HUMAN)
+    //playerSelect.changed(resetGame)
+  }
+
+  /**
+   * Game Update
+   */
   let updateTimer = 0
   let state = Game.getNewState(nI, nJ)
   const update = (force=false) => {
-    if (p.millis() > updateTimer || force) {
+    if ((playerSelect.value()==HUMAN && p.millis() > updateTimer) || force) {
       updateTimer = p.millis() + updateDelay
       if (!state.gameOver) state = Game.next(state)
     }
@@ -45,6 +67,7 @@ const sketch = ( p ) => {
    */
   p.setup = () => {
     initCanvas()
+    initPlayerSelect()
   }
 
   /**
@@ -62,18 +85,20 @@ const sketch = ( p ) => {
    * Key Pressed
    */
   p.keyPressed = () => {
-    if (state.current != null) {
-      let piece = state.current
-      if (p.key == "w") Game.updateCurrent(piece.cw(state.stack), state)
-      else if (p.key == "s") update(true)
-      else if (p.key == "a") Game.updateCurrent(piece.left(state.stack), state)
-      else if (p.key == "d") Game.updateCurrent(piece.right(state.stack), state)
-      else if (p.key == "c") Game.holdPiece(state)
-    } 
-    if (state.ghost != null) {
-      if (p.key == " ") {
-        Game.updateCurrent(state.ghost, state)
-        update(true)
+    if (playerSelect.value()==HUMAN) {
+      if (state.current != null) {
+        let piece = state.current
+        if (p.key == "w") Game.updateCurrent(piece.cw(state.stack), state)
+        else if (p.key == "s") update(true)
+        else if (p.key == "a") Game.updateCurrent(piece.left(state.stack), state)
+        else if (p.key == "d") Game.updateCurrent(piece.right(state.stack), state)
+        else if (p.key == "c") Game.holdPiece(state)
+      } 
+      if (state.ghost != null) {
+        if (p.key == " ") {
+          Game.updateCurrent(state.ghost, state)
+          update(true)
+        }
       }
     }
   }
