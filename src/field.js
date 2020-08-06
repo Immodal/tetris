@@ -86,4 +86,22 @@ const Field = {
   
     return npf
   },
+
+  HoldPiece: (p, x, y, w, h, ni, nj) => {
+    const hpf = Field.Base(p, x, y, w, h, ni, nj)
+  
+    hpf.draw = state => {
+      hpf.fillBackground()
+      if(state.hold!=null) {
+        let iOffset = 1 - Game.SPAWN_LOC[0]
+        let jOffset = 1 - Game.SPAWN_LOC[1]
+  
+        let p = state.hold.cons(state.hold.i+iOffset, state.hold.j+jOffset)
+        hpf.drawNodes(p.get())
+      }
+      hpf.drawBorder()
+    }
+  
+    return hpf
+  },
 }
