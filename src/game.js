@@ -69,12 +69,14 @@ const Game = {
   countFilled: row => row.reduce((acc, v) => v!=null ? acc+1 : acc, 0),
 
   getGhost: (piece, stack) => {
+    let newPiece = null
     for(let j = stack.length-1; j>=0; j--) {
-      if (stack[j][piece.i] == null) {
-        let p = piece.cons(piece.i, j, piece.rot)
-        if (p.isValid(stack)) return p
-      }
+      if (j<=piece.j) break
+      p = piece.cons(piece.i, j, piece.rot)
+      if (p.isValid(stack) && newPiece==null) newPiece = p
+      else if (!p.isValid(stack)) newPiece = null
     }
+    return newPiece
   },
 
   getRandomPiece: (i, j) => {

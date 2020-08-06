@@ -52,6 +52,9 @@ const sketch = ( p ) => {
       else if (p.key == "s") update(true)
       else if (p.key == "a") Game.updateCurrent(piece.left(state.stack), state)
       else if (p.key == "d") Game.updateCurrent(piece.right(state.stack), state)
+    } 
+    if (state.ghost != null) {
+      if (p.key == " ") Game.updateCurrent(state.ghost, state)
     }
   }
 }
