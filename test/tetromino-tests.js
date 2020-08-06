@@ -14,6 +14,10 @@ const TetrominoTests = {
   "O piece": () => {
     TetrominoTestsUtils.checkPiece(Tetromino.O)
   },
+
+  "S piece": () => {
+    TetrominoTestsUtils.checkPiece(Tetromino.O)
+  },
 }
 
 const TetrominoTestsUtils = {
@@ -30,6 +34,8 @@ const TetrominoTestsUtils = {
         (node, i) => 
           node.i-piece.i==piece.rotations[piece.rot][i][0] && 
           node.j-piece.j==piece.rotations[piece.rot][i][1]))
+
+    // All should be valid
     TetrominoTestsUtils.comparePieces(piece, piece.next(), 0, 1, 0)
     eq(true, piece.next().isValid(ni, nj, stack))
     TetrominoTestsUtils.comparePieces(piece, piece.left(ni, nj, stack), -1, 0, 0)

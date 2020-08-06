@@ -204,6 +204,46 @@ const Tetromino = {
   ],
 
   /**
+   * Factory Method for the S Tetromino.
+   * @param {int} i Column index of the top left cell of the piece's rotation matrix
+   * @param {int} j Row index of the top left cell of the piece's rotation matrix
+   * @param {int} rot Rotation state of the piece
+   */
+  S: (i, j, rot=0) => {
+    const piece = Tetromino.AbstractPiece(i, j, rot)
+    piece.cons = Tetromino.S
+    piece.color = "#00FF00"
+    piece.rotations = Tetromino.S_ROTATIONS
+    piece.cwKicks = Tetromino.CW_KICKS
+
+    return piece
+  },
+
+  /**
+   * Rotation States for S Tetromino.
+   */
+  S_ROTATIONS: [
+    [
+             [1,0], [2,0], 
+      [0,1], [1,1],
+    ],
+    [
+      [1,0],
+      [1,1], [2,1],
+             [2,2]
+    ],
+    [
+             [1,1], [2,1], 
+      [0,2], [1,2]
+    ],
+    [
+      [0,0],
+      [0,1], [1,1], 
+             [1,2],
+    ],
+  ],
+
+  /**
    * Factory Method for the I Tetromino.
    * @param {int} i Column index of the top left cell of the piece's rotation matrix
    * @param {int} j Row index of the top left cell of the piece's rotation matrix
