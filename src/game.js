@@ -27,6 +27,7 @@ const Game = {
    *                Typically set the true after lines have been cleared.
    * 5. nextPieces - An Array of the next 3 Tetrominos that will be played.
    * 6. hold - Piece that is being temporarily held.
+   * 7. gameOver - Boolean where true if no new pieces can spawn
    * @param {int} ni Number of columns in the playfield
    * @param {int} nj Number of rows in the playfield
    * @param {Object} state The state object
@@ -60,7 +61,13 @@ const Game = {
         if (Game.clearLines(state.stack)) {
           state.gravity = true
           Game.updateCurrent(null, state)
-        } else Game.updateCurrent(Game.getNextPiece(state), state)
+        } else {
+          let p = Game.getNextPiece(state)
+          if (!p.isValid(state.stack)) {
+            state.gameOver = true
+            Game.updateCurrent(p, state)
+          } else Game.updateCurrent(p, state)
+        }
       } else state.current = nextPiece
       
       return state

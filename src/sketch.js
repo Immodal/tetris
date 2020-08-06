@@ -37,7 +37,7 @@ const sketch = ( p ) => {
   const update = (force=false) => {
     if (p.millis() > updateTimer || force) {
       updateTimer = p.millis() + updateDelay
-      state = next(state)
+      if (!state.gameOver) state = next(state)
     }
   }
 
