@@ -34,6 +34,7 @@ const Game = {
         current: newPiece,
         ghost: Game.getGhost(newPiece, newStack),
         stack: newStack,
+        nextPieces: Array.from(Array(3), () => Game.getRandomPiece(0, 0))
       }
     } else if (state.gravity) {
       // Process Gravity

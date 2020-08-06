@@ -131,7 +131,7 @@ const Tetromino = {
   J: (i, j, rot=0) => {
     const piece = Tetromino.AbstractPiece(i, j, rot)
     piece.cons = Tetromino.J
-    piece.color = "#0000FF"
+    piece.color = "#2222FF"
     piece.rotations = Tetromino.J_ROTATIONS
     piece.cwKicks = Tetromino.CW_KICKS
 

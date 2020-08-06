@@ -3,13 +3,23 @@ const sketch = ( p ) => {
   const blockSize = 20
   const nI = 10
   const nJ = 20
-  const toX = i => Math.floor(i * p.width / nI)
-  const toY = i => Math.floor(i * p.height / nJ)
+  const npfI = 6
+  const npfJ = 10
 
   let canvas = null
+  let pf = null
+  let npf = null
   const initCanvas = () => {
-    canvas = p.createCanvas(nI*blockSize, nJ*blockSize)
+    canvas = p.createCanvas(1000, 500)
     canvas.parent("#cv")
+    pf = Field.Play(p, 
+      canvas.width/2-blockSize*nI/2, 50,
+      blockSize*nI, blockSize*nJ,
+      nI, nJ)
+    npf = Field.NextPieces(p, 
+      3*canvas.width/4-blockSize*npfI, 50,
+      blockSize*npfI, blockSize*npfJ,
+      npfI, npfJ)
   }
 
   const next = Game.next(nI, nJ)
@@ -36,7 +46,8 @@ const sketch = ( p ) => {
   p.draw = () => {
     p.background(240)
     update()
-    p5Game.drawState(p, toX, toY, state)
+    pf.draw(state)
+    npf.draw(state)
   }
 
   /**
@@ -59,35 +70,5 @@ const sketch = ( p ) => {
   }
 }
 
-const p5Game = {
-  drawState: (p, toX, toY, state) => {
-    if (state.current!=null) p5Game.drawNodes(p, toX, toY, state.current.get())
-    if (state.ghost!=null) p5Game.drawNodes(p, toX, toY, state.ghost.get(), true)
-    p5Game.drawStack(p, toX, toY, state.stack)
-  },
-
-  drawStack: (p, toX, toY, stack) => {
-    p.stroke(0)
-    stack.forEach((row, j) => {
-      row.forEach((color, i) => {
-        if(color != null) {
-          p.fill(color)
-          p.rect(toX(i), toY(j), toX(1), toY(1))
-        }
-      })
-    })
-  },
-
-  drawNodes: (p, toX, toY, nodes, isGhost=false) => {
-    let ghostAlpha = "55"
-    let strokeColor = "#000000"
-    nodes.forEach(node => {
-      p.fill(isGhost ? node.color + ghostAlpha : node.color)
-      p.stroke(isGhost ?strokeColor + ghostAlpha : strokeColor)
-      p.rect(toX(node.i), toY(node.j), toX(1), toY(1))
-    })
-  },
-
-}
 
 let p5Instance = new p5(sketch);
