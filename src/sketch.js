@@ -1,18 +1,18 @@
 const sketch = ( p ) => {
 
   const blockSize = 20
-  const nI = () => 10
-  const nJ = () => 20
-  const toX = i => Math.floor(i * p.width / nI())
-  const toY = i => Math.floor(i * p.height / nJ())
+  const nI = 10
+  const nJ = 20
+  const toX = i => Math.floor(i * p.width / nI)
+  const toY = i => Math.floor(i * p.height / nJ)
 
   let canvas = null
   const initCanvas = () => {
-    canvas = p.createCanvas(nI()*blockSize, nJ()*blockSize)
+    canvas = p.createCanvas(nI*blockSize, nJ*blockSize)
     canvas.parent("#cv")
   }
 
-  const next = Game.next(nI(), nJ())
+  const next = Game.next(nI, nJ)
   let updateTimer = 0
   let state = next(null)
   const updateDelay = 500

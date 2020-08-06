@@ -27,7 +27,7 @@ const Game = {
   next: (ni, nj) => (state=null) => {
     if (state==null) {
       // Create a new state
-      let newPiece = Game.getRandomPiece(0,0)
+      let newPiece = Game.getRandomPiece(3,0)
       let newStack = utils.mkFill(ni, nj, null)
       return {
         gravity: false,
@@ -39,7 +39,7 @@ const Game = {
       // Process Gravity
       Game.processGravity(state.stack)
       state.gravity = false
-      state.current = Game.getRandomPiece(0,0)
+      state.current = Game.getRandomPiece(3,0)
       state.ghost = Game.getGhost(state.current, state.stack)
       return state
     } else {
@@ -134,6 +134,6 @@ const Game = {
    */
   getRandomPiece: (i, j) => {
     let cons = Game.tetrominoFactories[utils.randInt(0, Game.tetrominoFactories.length-1)]
-    return cons(i, j)
+    return cons==Tetromino.I ? cons(i, j-1) : cons(i, j)
   },
 }
