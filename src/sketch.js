@@ -48,10 +48,10 @@ const sketch = ( p ) => {
   p.keyPressed = () => {
     if (state.current != null) {
       let piece = state.current
-      if (p.key == "w") state.current = piece.cw(state.ni, state.nj, state.stack)
+      if (p.key == "w") Game.updateCurrent(piece.cw(state.stack), state)
       else if (p.key == "s") update(true)
-      else if (p.key == "a") state.current = piece.left(state.ni, state.nj, state.stack)
-      else if (p.key == "d") state.current = piece.right(state.ni, state.nj, state.stack)
+      else if (p.key == "a") Game.updateCurrent(piece.left(state.stack), state)
+      else if (p.key == "d") Game.updateCurrent(piece.right(state.stack), state)
     }
   }
 }
@@ -59,10 +59,12 @@ const sketch = ( p ) => {
 const p5Game = {
   drawState: (p, toX, toY, state) => {
     if (state.current!=null) p5Game.drawNodes(p, toX, toY, state.current.get())
+    if (state.ghost!=null) p5Game.drawNodes(p, toX, toY, state.ghost.get(), true)
     p5Game.drawStack(p, toX, toY, state.stack)
   },
 
   drawStack: (p, toX, toY, stack) => {
+    p.stroke(0)
     stack.forEach((row, j) => {
       row.forEach((color, i) => {
         if(color != null) {
@@ -72,10 +74,13 @@ const p5Game = {
       })
     })
   },
-  
-  drawNodes: (p, toX, toY, nodes) => {
+
+  drawNodes: (p, toX, toY, nodes, isGhost=false) => {
+    let ghostAlpha = "55"
+    let strokeColor = "#000000"
     nodes.forEach(node => {
-      p.fill(node.color)
+      p.fill(isGhost ? node.color + ghostAlpha : node.color)
+      p.stroke(isGhost ?strokeColor + ghostAlpha : strokeColor)
       p.rect(toX(node.i), toY(node.j), toX(1), toY(1))
     })
   },

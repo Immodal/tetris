@@ -63,39 +63,37 @@ const Tetromino = {
     /**
      * Returns a new Piece shifted to the left by 1 cell.
      */
-    piece.left = (ni, nj, stack) => {
+    piece.left = stack => {
       let p = piece.next(-1, 0)
-      return p.isValid(ni, nj, stack) ? p : piece.next(0, 0)
+      return p.isValid(stack) ? p : piece.next(0, 0)
     }
 
     /**
      * Returns a new Piece shifted to the right by 1 cell.
      */
-    piece.right = (ni, nj, stack) => {
+    piece.right = stack => {
       let p = piece.next(1, 0)
-      return p.isValid(ni, nj, stack) ? p : piece.next(0, 0)
+      return p.isValid(stack) ? p : piece.next(0, 0)
     }
 
     /**
      * Returns a new Piece with its rotation state advanced by 1.
      */
-    piece.cw = (ni, nj, stack) => {
+    piece.cw = stack => {
       let rot = piece.rot>=piece.rotations.length-1 ? 0 : piece.rot+1
       let kicks = piece.cwKicks[piece.rot]
       for(let i=0; i<kicks.length; i++) {
         let p = piece.next(kicks[i][0], kicks[i][1], rot)
-        if(p.isValid(ni, nj, stack)) return p
+        if(p.isValid(stack)) return p
       }
       return piece.next(0, 0)
     }
 
     /**
      * Returns true if the piece position is valid.
-     * @param {int} ni Number of columns in the playfield
-     * @param {int} nj Number of rows in the playfield
      * @param {NodeSet} stack The stack containing all locked pieces
      */
-    piece.isValid = (ni, nj, stack) => piece.isInBounds(ni, nj) && !piece.isCollided(stack)
+    piece.isValid = stack => piece.isInBounds(stack[0].length, stack.length) && !piece.isCollided(stack)
 
     /**
      * Returns true if the piece is within the bounds of the playfield

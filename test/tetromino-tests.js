@@ -37,35 +37,35 @@ const TetrominoTestsUtils = {
 
     // All should be valid
     TetrominoTestsUtils.comparePieces(piece, piece.next(), 0, 1, 0)
-    eq(true, piece.next().isValid(ni, nj, stack))
-    TetrominoTestsUtils.comparePieces(piece, piece.left(ni, nj, stack), -1, 0, 0)
-    TetrominoTestsUtils.comparePieces(piece, piece.right(ni, nj, stack), 1, 0, 0)
-    TetrominoTestsUtils.comparePieces(piece, piece.cw(ni, nj, stack), 0, 0, 1)
+    eq(true, piece.next().isValid(stack))
+    TetrominoTestsUtils.comparePieces(piece, piece.left(stack), -1, 0, 0)
+    TetrominoTestsUtils.comparePieces(piece, piece.right(stack), 1, 0, 0)
+    TetrominoTestsUtils.comparePieces(piece, piece.cw(stack), 0, 0, 1)
 
     // next() will not be valid
     piece = cons(5, nj-2)
     TetrominoTestsUtils.comparePieces(piece, piece.next(), 0, 1, 0)
-    eq(false, piece.next().isValid(ni, nj, stack))
-    TetrominoTestsUtils.comparePieces(piece, piece.left(ni, nj, stack), -1, 0, 0)
-    TetrominoTestsUtils.comparePieces(piece, piece.right(ni, nj, stack), 1, 0, 0)
-    TetrominoTestsUtils.comparePieces(piece, piece.cw(ni, nj, stack), null, null, 
+    eq(false, piece.next().isValid(stack))
+    TetrominoTestsUtils.comparePieces(piece, piece.left(stack), -1, 0, 0)
+    TetrominoTestsUtils.comparePieces(piece, piece.right(stack), 1, 0, 0)
+    TetrominoTestsUtils.comparePieces(piece, piece.cw(stack), null, null, 
                                       cons==Tetromino.I ? 0 : 1)
 
     // left() will have no effect
     piece = cons(cons==Tetromino.O ? -1 : 0, 0)
     TetrominoTestsUtils.comparePieces(piece, piece.next(), 0, 1, 0)
-    eq(true, piece.next().isValid(ni, nj, stack))
-    TetrominoTestsUtils.comparePieces(piece, piece.left(ni, nj, stack), 0, 0, 0)
-    TetrominoTestsUtils.comparePieces(piece, piece.right(ni, nj, stack), 1, 0, 0)
-    TetrominoTestsUtils.comparePieces(piece, piece.cw(ni, nj, stack), 0, 0, 1)
+    eq(true, piece.next().isValid(stack))
+    TetrominoTestsUtils.comparePieces(piece, piece.left(stack), 0, 0, 0)
+    TetrominoTestsUtils.comparePieces(piece, piece.right(stack), 1, 0, 0)
+    TetrominoTestsUtils.comparePieces(piece, piece.cw(stack), 0, 0, 1)
 
     // right() will have no effect
     piece = cons(ni-(cons==Tetromino.I? 4 : 3), 0)
     TetrominoTestsUtils.comparePieces(piece, piece.next(), 0, 1, 0)
-    eq(true, piece.next().isValid(ni, nj, stack))
-    TetrominoTestsUtils.comparePieces(piece, piece.left(ni, nj, stack), -1, 0, 0)
-    TetrominoTestsUtils.comparePieces(piece, piece.right(ni, nj, stack), 0, 0, 0)
-    TetrominoTestsUtils.comparePieces(piece, piece.cw(ni, nj, stack), 0, 0, 1)
+    eq(true, piece.next().isValid(stack))
+    TetrominoTestsUtils.comparePieces(piece, piece.left(stack), -1, 0, 0)
+    TetrominoTestsUtils.comparePieces(piece, piece.right(stack), 0, 0, 0)
+    TetrominoTestsUtils.comparePieces(piece, piece.cw(stack), 0, 0, 1)
   },
   
   comparePieces: (p1, p2, iDiff, jDiff, rotDiff) => {
