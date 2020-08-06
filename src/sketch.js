@@ -10,14 +10,14 @@ const sketch = ( p ) => {
   let pf = null
   let npf = null
   const initCanvas = () => {
-    canvas = p.createCanvas(1000, 500)
+    canvas = p.createCanvas(600, 500)
     canvas.parent("#cv")
     pf = Field.Play(p, 
       canvas.width/2-blockSize*nI/2, 50,
       blockSize*nI, blockSize*nJ,
       nI, nJ)
     npf = Field.NextPieces(p, 
-      3*canvas.width/4-blockSize*npfI, 50,
+      pf.x + pf.w + blockSize, 50,
       blockSize*npfI, blockSize*npfJ,
       npfI, npfJ)
   }

@@ -11,6 +11,11 @@ const Game = {
     Tetromino.T,
     Tetromino.Z,
   ],
+  
+  /**
+   * Spawn Location of Tetrominoes in Playfield
+   */
+  SPAWN_LOC: [3,0],
 
   /**
    * Update and Return the given state in place to the next time step.
@@ -20,6 +25,7 @@ const Game = {
    * 3. ghost - "state.current" shifted down to the lowest point in the stack
    * 4. gravity - Boolean where true indicates that the next update will be for computing gravity.
    *                Typically set the true after lines have been cleared.
+   * 5. nextPieces - An Array of the next 3 Tetrominos that will be played.
    * @param {int} ni Number of columns in the playfield
    * @param {int} nj Number of rows in the playfield
    * @param {Object} state The state object
@@ -27,21 +33,19 @@ const Game = {
   next: (ni, nj) => (state=null) => {
     if (state==null) {
       // Create a new state
-      let newPiece = Game.getRandomPiece(3,0)
-      let newStack = utils.mkFill(ni, nj, null)
-      return {
+      let newState = {
         gravity: false,
-        current: newPiece,
-        ghost: Game.getGhost(newPiece, newStack),
-        stack: newStack,
-        nextPieces: Array.from(Array(3), () => Game.getRandomPiece(0, 0))
+        stack: utils.mkFill(ni, nj, null),
+        nextPieces: Array.from(Array(3), () => Game.getRandomPiece(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1]))
       }
+      // Add current and ghost
+      Game.updateCurrent(Game.getRandomPiece(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1]), newState)
+      return newState
     } else if (state.gravity) {
       // Process Gravity
       Game.processGravity(state.stack)
       state.gravity = false
-      state.current = Game.getRandomPiece(3,0)
-      state.ghost = Game.getGhost(state.current, state.stack)
+      Game.updateCurrent(Game.getNextPiece(state), state)
       return state
     } else {
       // Advance to next time step
@@ -49,10 +53,10 @@ const Game = {
       if (!nextPiece.isValid(state.stack)) {
         // Lock piece
         Game.addPiece(state.current, state.stack)
-        Game.clearLines(state.stack)
-        state.gravity = true
-        state.current = null
-        state.ghost = null
+        if (Game.clearLines(state.stack)) {
+          state.gravity = true
+          Game.updateCurrent(null, state)
+        } else Game.updateCurrent(Game.getNextPiece(state), state)
       } else state.current = nextPiece
       
       return state
@@ -70,6 +74,14 @@ const Game = {
   },
 
   /**
+   * Returns a the next Tetromino in newPieces
+   */
+  getNextPiece: state => {
+    state.nextPieces.push(Game.getRandomPiece(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1]))
+    return state.nextPieces.shift()
+  },
+
+  /**
    * Adds a piece to the given stack.
    * @param {Tetromino} piece The piece to add to the stack
    * @param {Array} stack 2D array that keeps track of Tetromino segments that have been locked in place.
@@ -77,15 +89,21 @@ const Game = {
   addPiece: (piece, stack) => piece.get().forEach(node => stack[node.j][node.i] = node.color),
 
   /**
-   * Clear all lines that have been filled in the given stack
+   * Clear all lines that have been filled in the given stack.
+   * Returns true if any lines were cleared.
    * @param {Array} stack 2D array that keeps track of Tetromino segments that have been locked in place.
    */
   clearLines: stack => {
+    let linesCleared = false
     for(let j=stack.length-1; j>=0; j--) {
       let nFilled = Game.countFilled(stack[j])
       if (nFilled == 0) break
-      else if (nFilled == stack[0].length) stack[j].forEach((_, i) => stack[j][i] = null)
+      else if (nFilled == stack[0].length) {
+        stack[j].forEach((_, i) => stack[j][i] = null)
+        linesCleared = true
+      }
     }
+    return linesCleared
   },
 
   /**

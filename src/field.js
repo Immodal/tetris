@@ -74,8 +74,8 @@ const Field = {
   
     npf.draw = state => {
       npf.fillBackground()
-      let iOffset = 1
-      let jOffset = 1
+      let iOffset = 1 - Game.SPAWN_LOC[0]
+      let jOffset = 1 - Game.SPAWN_LOC[1]
       state.nextPieces.forEach(piece => {
         let p = piece.cons(piece.i+iOffset, piece.j+jOffset)
         jOffset += piece.cons == Tetromino.I ? 2 : 3
