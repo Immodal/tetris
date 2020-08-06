@@ -13,16 +13,13 @@ const sketch = ( p ) => {
   }
 
   const next = Game.next(nI(), nJ())
-  let stateUpdate = {
-    current: null
-  }
   let updateTimer = 0
   let state = next(null)
   const updateDelay = 500
   const update = (force=false) => {
     if (p.millis() > updateTimer || force) {
       updateTimer = p.millis() + updateDelay
-      state = next(state, stateUpdate)
+      state = next(state)
     }
   }
 
@@ -54,7 +51,10 @@ const sketch = ( p ) => {
       else if (p.key == "d") Game.updateCurrent(piece.right(state.stack), state)
     } 
     if (state.ghost != null) {
-      if (p.key == " ") Game.updateCurrent(state.ghost, state)
+      if (p.key == " ") {
+        Game.updateCurrent(state.ghost, state)
+        update(true)
+      }
     }
   }
 }

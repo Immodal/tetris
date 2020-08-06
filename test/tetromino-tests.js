@@ -16,7 +16,15 @@ const TetrominoTests = {
   },
 
   "S piece": () => {
-    TetrominoTestsUtils.checkPiece(Tetromino.O)
+    TetrominoTestsUtils.checkPiece(Tetromino.S)
+  },
+
+  "T piece": () => {
+    TetrominoTestsUtils.checkPiece(Tetromino.T)
+  },
+
+  "Z piece": () => {
+    TetrominoTestsUtils.checkPiece(Tetromino.Z)
   },
 }
 

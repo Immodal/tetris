@@ -1,27 +1,28 @@
-/**
- * This is the base object used for each Tetromino
- */
-const Node = (i, j, color) => {
-  const node = {}
-
-  node.i = i
-  node.j = j
-  node.color = color
-
-  /**
-   * Returns true if node is in game boundary given by ni, nj
-   */
-  node.inBounds = (ni, nj) => node.i>=0 && node.i<ni && node.j>=0 && node.j<nj
-
-  /**
-   * Returns true if node's components equal n's components
-   */
-  node.eq = n => node.i == n.i && node.j == n.j
-
-  return node
-}
 
 const Tetromino = {
+  /**
+   * This is the base object used for each Tetromino
+   */
+  Node: (i, j, color) => {
+    const node = {}
+
+    node.i = i
+    node.j = j
+    node.color = color
+
+    /**
+     * Returns true if node is in game boundary given by ni, nj
+     */
+    node.inBounds = (ni, nj) => node.i>=0 && node.i<ni && node.j>=0 && node.j<nj
+
+    /**
+     * Returns true if node's components equal n's components
+     */
+    node.eq = n => node.i == n.i && node.j == n.j
+
+    return node
+  },
+
   /**
    * Abstract Piece factory method for a Tetromino piece.
    * Child classes are expected to define the following attributes:
@@ -46,7 +47,7 @@ const Tetromino = {
     piece.get = () => {
       return piece
         .rotations[rot]
-        .map(([i,j]) => Node(i+piece.i, j+piece.j, piece.color))
+        .map(([i,j]) => Tetromino.Node(i+piece.i, j+piece.j, piece.color))
     }
 
     /**
@@ -240,6 +241,87 @@ const Tetromino = {
              [1,2],
     ],
   ],
+
+  /**
+   * Factory Method for the T Tetromino.
+   * @param {int} i Column index of the top left cell of the piece's rotation matrix
+   * @param {int} j Row index of the top left cell of the piece's rotation matrix
+   * @param {int} rot Rotation state of the piece
+   */
+  T: (i, j, rot=0) => {
+    const piece = Tetromino.AbstractPiece(i, j, rot)
+    piece.cons = Tetromino.T
+    piece.color = "#800080"
+    piece.rotations = Tetromino.T_ROTATIONS
+    piece.cwKicks = Tetromino.CW_KICKS
+
+    return piece
+  },
+
+  /**
+   * Rotation States for T Tetromino.
+   */
+  T_ROTATIONS: [
+    [
+             [1,0], 
+      [0,1], [1,1], [2,1]
+    ],
+    [
+      [1,0],
+      [1,1], [2,1],
+      [1,2]
+    ],
+    [
+      [0,1], [1,1], [2,1], 
+             [1,2]
+    ],
+    [
+             [1,0],
+      [0,1], [1,1], 
+             [1,2],
+    ],
+  ],
+
+  /**
+   * Factory Method for the Z Tetromino.
+   * @param {int} i Column index of the top left cell of the piece's rotation matrix
+   * @param {int} j Row index of the top left cell of the piece's rotation matrix
+   * @param {int} rot Rotation state of the piece
+   */
+  Z: (i, j, rot=0) => {
+    const piece = Tetromino.AbstractPiece(i, j, rot)
+    piece.cons = Tetromino.Z
+    piece.color = "#FF0000"
+    piece.rotations = Tetromino.Z_ROTATIONS
+    piece.cwKicks = Tetromino.CW_KICKS
+
+    return piece
+  },
+
+  /**
+   * Rotation States for Z Tetromino.
+   */
+  Z_ROTATIONS: [
+    [
+      [0,0], [1,0], 
+             [1,1], [2,1]
+    ],
+    [
+             [2,0],
+      [1,1], [2,1],
+      [1,2]
+    ],
+    [
+      [0,1], [1,1],  
+             [1,2], [2,2]
+    ],
+    [
+             [1,0],
+      [0,1], [1,1], 
+      [0,2],
+    ],
+  ],
+
 
   /**
    * Factory Method for the I Tetromino.
