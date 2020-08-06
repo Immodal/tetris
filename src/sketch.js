@@ -46,17 +46,19 @@ const sketch = ( p ) => {
    * Key Pressed
    */
   p.keyPressed = () => {
-    let piece = state.current
-    if (p.key == "w") state.current = piece.cw(state.ni, state.nj, state.stack)
-    else if (p.key == "s") update(true)
-    else if (p.key == "a") state.current = piece.left(state.ni, state.nj, state.stack)
-    else if (p.key == "d") state.current = piece.right(state.ni, state.nj, state.stack)
+    if (state.current != null) {
+      let piece = state.current
+      if (p.key == "w") state.current = piece.cw(state.ni, state.nj, state.stack)
+      else if (p.key == "s") update(true)
+      else if (p.key == "a") state.current = piece.left(state.ni, state.nj, state.stack)
+      else if (p.key == "d") state.current = piece.right(state.ni, state.nj, state.stack)
+    }
   }
 }
 
 const p5Game = {
   drawState: (p, toX, toY, state) => {
-    p5Game.drawNodes(p, toX, toY, state.current.get())
+    if (state.current!=null) p5Game.drawNodes(p, toX, toY, state.current.get())
     p5Game.drawStack(p, toX, toY, state.stack)
   },
 

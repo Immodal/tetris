@@ -10,23 +10,25 @@ const Game = {
       return {
         ni: ni,
         nj: nj,
-        current: Tetromino.I(0,0),
+        gravity: false,
+        current: Game.getRandomPiece(0,0),
         stack: utils.mkFill(ni, nj, null),
       }
+    } else if (state.gravity) {
+      Game.processGravity(state.stack)
+      state.gravity = false
+      state.current = Game.getRandomPiece(0,0)
+      return state
     } else {
-      let newPiece = state.current.next()
-      let willLock = !newPiece.isValid(state.ni, state.nj, state.stack)
-      if (willLock) {
+      let nextPiece = state.current.next()
+      if (!nextPiece.isValid(state.ni, state.nj, state.stack)) {
         Game.addPiece(state.current, state.stack)
         Game.clearLines(state.stack)
-        Game.processGravity(state.stack)
-      }
-      return {
-        ni: state.ni,
-        nj: state.nj,
-        current: willLock ? Game.getRandomPiece(0,0) : newPiece,
-        stack: state.stack,
-      }
+        state.gravity = true
+        state.current = null
+      } else state.current = nextPiece
+      
+      return state
     }
   },
 
