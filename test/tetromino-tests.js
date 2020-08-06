@@ -9,7 +9,11 @@ const TetrominoTests = {
 
   "L piece": () => {
     TetrominoTestsUtils.checkPiece(Tetromino.L)
-  }
+  },
+
+  "O piece": () => {
+    TetrominoTestsUtils.checkPiece(Tetromino.O)
+  },
 }
 
 const TetrominoTestsUtils = {
@@ -32,8 +36,17 @@ const TetrominoTestsUtils = {
     TetrominoTestsUtils.comparePieces(piece, piece.right(ni, nj, stack), 1, 0, 0)
     TetrominoTestsUtils.comparePieces(piece, piece.cw(ni, nj, stack), 0, 0, 1)
 
+    // next() will not be valid
+    piece = cons(5, nj-2)
+    TetrominoTestsUtils.comparePieces(piece, piece.next(), 0, 1, 0)
+    eq(false, piece.next().isValid(ni, nj, stack))
+    TetrominoTestsUtils.comparePieces(piece, piece.left(ni, nj, stack), -1, 0, 0)
+    TetrominoTestsUtils.comparePieces(piece, piece.right(ni, nj, stack), 1, 0, 0)
+    TetrominoTestsUtils.comparePieces(piece, piece.cw(ni, nj, stack), null, null, 
+                                      cons==Tetromino.I ? 0 : 1)
+
     // left() will have no effect
-    piece = cons(0, 0)
+    piece = cons(cons==Tetromino.O ? -1 : 0, 0)
     TetrominoTestsUtils.comparePieces(piece, piece.next(), 0, 1, 0)
     eq(true, piece.next().isValid(ni, nj, stack))
     TetrominoTestsUtils.comparePieces(piece, piece.left(ni, nj, stack), 0, 0, 0)
@@ -50,8 +63,8 @@ const TetrominoTestsUtils = {
   },
   
   comparePieces: (p1, p2, iDiff, jDiff, rotDiff) => {
-    eq(iDiff, p2.i - p1.i)
-    eq(jDiff, p2.j - p1.j)
-    eq(rotDiff, p2.rot - p1.rot)
+    if (iDiff!=null) eq(iDiff, p2.i - p1.i)
+    if (jDiff!=null) eq(jDiff, p2.j - p1.j)
+    if (rotDiff!=null) eq(rotDiff, p2.rot - p1.rot)
   },
 }

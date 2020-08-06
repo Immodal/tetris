@@ -113,6 +113,9 @@ const Tetromino = {
     return piece
   },
 
+  /**
+   * Clockwise Rotation Wall Kicks for most Tetromino.
+   */
   CW_KICKS: [
     [[0,0], [-1,0], [-1, 1], [0,-2], [-1,-2]],
     [[0,0], [1,0], [1,-1], [0,2], [1,2]],
@@ -237,7 +240,7 @@ const Tetromino = {
   ],
 
   /**
-   * 
+   * Clockwise Rotation Wall Kicks for I Tetromino.
    */
   I_CW_KICKS: [
     [[0,0], [-2,0], [1,0], [-2,-1], [1,2]],
@@ -245,5 +248,36 @@ const Tetromino = {
     [[0,0], [2,0], [-1,0], [2,1], [-1,-2]],
     [[0,0], [1,0], [-2,0], [1,-2], [-2,1]],
   ],
+
+  /**
+   * Factory Method for the O Tetromino.
+   * @param {int} i Column index of the top left cell of the piece's rotation matrix
+   * @param {int} j Row index of the top left cell of the piece's rotation matrix
+   * @param {int} rot Rotation state of the piece
+   */
+  O: (i, j, rot=0) => {
+    const piece = Tetromino.AbstractPiece(i, j, rot)
+    piece.cons = Tetromino.O
+    piece.color = "#FFFF00"
+    piece.rotations = Tetromino.O_ROTATIONS
+    piece.cwKicks = Tetromino.O_CW_KICKS
+
+    return piece
+  },
+
+  /**
+   * Rotation States for O Tetromino.
+   */
+  O_ROTATIONS: Array(4).fill(
+    [
+      [1,0], [2,0], 
+      [1,1], [2,1]
+    ]
+  ),
+
+  /**
+   * Clockwise Rotation Wall Kicks for O Tetromino.
+   */
+  O_CW_KICKS: Array(4).fill([[0,0], [0,0], [0,0], [0,0], [0,0]]),
 
 }

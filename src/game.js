@@ -3,6 +3,7 @@ const Game = {
     Tetromino.I,
     Tetromino.J,
     Tetromino.L,
+    Tetromino.O,
   ],
 
   next: (ni, nj) => (state=null, update={}) => {
