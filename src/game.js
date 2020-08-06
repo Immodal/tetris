@@ -1,3 +1,8 @@
+
+/**
+ * Game logic following as closely to the Tetris Guidelines as is convenient.
+ * https://tetris.fandom.com/wiki/Tetris_Guideline
+ */
 const Game = {
   /**
    * Array of factory methods for pieces.
@@ -13,44 +18,25 @@ const Game = {
   ],
   
   /**
-   * Spawn Location of Tetrominoes in Playfield
+   * Spawn Location of Tetrominoes in Playfield.
    */
   SPAWN_LOC: [3,0],
 
   /**
+   * Number of Tetrominoes to show in preview.
+   */
+  PREVIEW_LIMIT: 3,
+
+  /**
    * Update and Return the given state in place to the next time step.
-   * The state object contains the following attributes:
-   * 1. current - The Tetromino currently being interacted with by the player
-   * 2. stack - a 2D array that keeps track of Tetromino segments that have been locked in place.
-   * 3. ghost - "state.current" shifted down to the lowest point in the stack
-   * 4. gravity - Boolean where true indicates that the next update will be for computing gravity.
-   *                Typically set the true after lines have been cleared.
-   * 5. nextPieces - An Array of the next 3 Tetrominos that will be played.
-   * 6. hold - Piece that is being temporarily held.
-   * 7. gameOver - Boolean where true if no new pieces can spawn
-   * @param {int} ni Number of columns in the playfield
-   * @param {int} nj Number of rows in the playfield
    * @param {Object} state The state object
    */
-  next: (ni, nj) => (state=null) => {
-    if (state==null) {
-      // Create a new state
-      let newState = {
-        hold: null,
-        justHeld: false,
-        gravity: false,
-        stack: utils.mkFill(ni, nj, null),
-        nextPieces: Array.from(Array(3), () => Game.getRandomPiece())
-      }
-      // Add current and ghost
-      Game.updateCurrent(Game.getRandomPiece(), newState)
-      return newState
-    } else if (state.gravity) {
+  next: state => {
+    if (state.gravity) {
       // Process Gravity
       Game.processGravity(state.stack)
       state.gravity = false
       Game.updateCurrent(Game.getNextPiece(state), state)
-      return state
     } else {
       // Advance to next time step
       let nextPiece = state.current.next()
@@ -59,9 +45,11 @@ const Game = {
         Game.addPiece(state.current, state.stack)
         state.justHeld = false
         if (Game.clearLines(state.stack)) {
+          // If lines were cleared, use next update for gravity computation
           state.gravity = true
           Game.updateCurrent(null, state)
         } else {
+          // Of not, get new piece
           let p = Game.getNextPiece(state)
           if (!p.isValid(state.stack)) {
             state.gameOver = true
@@ -69,9 +57,36 @@ const Game = {
           } else Game.updateCurrent(p, state)
         }
       } else state.current = nextPiece
-      
-      return state
     }
+    return state
+  },
+
+  /**
+   * Returns a brand new state object.
+   * The state object contains the following attributes:
+   * 1. current - The Tetromino currently being interacted with by the player
+   * 2. stack - a 2D array that keeps track of Tetromino segments that have been locked in place.
+   * 3. ghost - "state.current" shifted down to the lowest point in the stack
+   * 4. gravity - Boolean where true indicates that the next update will be for computing gravity.
+   *                Typically set the true after lines have been cleared.
+   * 5. nextPieces - An Array of the next 3 Tetrominos that will be played.
+   * 6. hold - Piece that is being temporarily held.
+   * 7. gameOver - Boolean where true if no new pieces can spawn.
+   * @param {int} ni Number of columns in the playfield
+   * @param {int} nj Number of rows in the playfield
+   */
+  getNewState: (ni, nj) => {
+    // Create a new state
+    let newState = {
+      hold: null,
+      justHeld: false,
+      gravity: false,
+      stack: utils.mkFill(ni, nj, null),
+      nextPieces: Game.getRandomPieces()
+    }
+    // Add current and ghost
+    Game.updateCurrent(Game.getNextPiece(newState), newState)
+    return newState
   },
 
   /**
@@ -89,7 +104,9 @@ const Game = {
    * @param {Object} state The state object
    */
   getNextPiece: state => {
-    state.nextPieces.push(Game.getRandomPiece())
+    if (state.nextPieces.length <= Game.PREVIEW_LIMIT) {
+      state.nextPieces.push(...Game.getRandomPieces())
+    }
     return state.nextPieces.shift()
   },
 
@@ -181,10 +198,14 @@ const Game = {
   },
 
   /**
-   * Returns a random Tetromino initialized to Game.SPAWN_LOC
+   * Returns a random 7 long sequence of Tetrominos initialized to Game.SPAWN_LOC
    */
-  getRandomPiece: () => {
-    let cons = Game.tetrominoFactories[utils.randInt(0, Game.tetrominoFactories.length-1)]
-    return cons==Tetromino.I ? cons(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1]-1) : cons(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1])
+  getRandomPieces: () => {
+    let seq = Game.tetrominoFactories
+      .map(cons => cons==Tetromino.I ? 
+          cons(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1]-1) : 
+          cons(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1]))
+    utils.shuffle(seq)
+    return seq
   },
 }

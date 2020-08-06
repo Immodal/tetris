@@ -76,11 +76,12 @@ const Field = {
       npf.fillBackground()
       let iOffset = 1 - Game.SPAWN_LOC[0]
       let jOffset = 1 - Game.SPAWN_LOC[1]
-      state.nextPieces.forEach(piece => {
+      for(let k=0; k<Game.PREVIEW_LIMIT; k++) {
+        let piece = state.nextPieces[k]
         let p = piece.cons(piece.i+iOffset, piece.j+jOffset)
         jOffset += piece.cons == Tetromino.I ? 2 : 3
         npf.drawNodes(p.get())
-      })
+      }
       npf.drawBorder()
     }
   

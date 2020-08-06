@@ -31,13 +31,12 @@ const sketch = ( p ) => {
       hpfI, hpfJ)
   }
 
-  const next = Game.next(nI, nJ)
   let updateTimer = 0
-  let state = next(null)
+  let state = Game.getNewState(nI, nJ)
   const update = (force=false) => {
     if (p.millis() > updateTimer || force) {
       updateTimer = p.millis() + updateDelay
-      if (!state.gameOver) state = next(state)
+      if (!state.gameOver) state = Game.next(state)
     }
   }
 
