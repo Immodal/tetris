@@ -5,7 +5,7 @@ const Scoring = {
     let stackHeight = 0
     let nHoles = 0
     let nBlocked = 0
-    let tallEmptyColumns = new Map()
+    let nTallEmptyColumns = 0
     let nFilledRows = 0
 
     for(let j=stack.length-1; j>=0; j--) {
@@ -17,9 +17,9 @@ const Scoring = {
         else if (stack[j][i]==null && !emptySet.has(i, j)) nHoles += 1
         // Blocked & tallEmptyColumns
         else if (stack[j][i]==null) {
-          let blocked = Scoring.countBlocked(i, j, stack)
-          if (blocked==0) tallEmptyColumns.set(i, tallEmptyColumns.has(i) ? tallEmptyColumns.get(i)+1 : 1)
-          else nBlocked += blocked
+          let res = Scoring.checkColumn(i, j, stack)
+          if (res[0]) nBlocked += 1
+          if (res[1]) nTallEmptyColumns += 1
         }
       }
       // Early Exit
@@ -32,9 +32,9 @@ const Scoring = {
     Game.removePiece(piece, stack)
 
     let score = 0
-    score += 4*nHoles
-    score += 4*nBlocked
-    score += Scoring.tallEmptyColumnsPenalty(tallEmptyColumns)
+    score += 5*nHoles
+    score += 5*nBlocked
+    score += Math.max(0, (nTallEmptyColumns-1)*6)
     score += Scoring.heightPenalty(stack.length, stackHeight, nFilledRows)
     return score
   },
@@ -46,37 +46,32 @@ const Scoring = {
    * @param {int} nFilledRows Number of rows in the stack that have been completely filled
    */
   heightPenalty: (nj, stackHeight, nFilledRows) => {
-    let quarterHeightPenalty = Math.max(0, stackHeight - Math.floor(nj/4) - nFilledRows)
-    let halfHeightPenalty = Math.max(0, stackHeight - Math.floor(nj/4) - nFilledRows)*2
+    let halfHeightPenalty = Math.max(0, stackHeight - Math.floor(nj/2) - nFilledRows)*2
+    let threeQuarterHeightPenalty = Math.max(0, stackHeight - Math.floor(3*nj/4) - nFilledRows)*2
 
-    return stackHeight - nFilledRows + halfHeightPenalty + quarterHeightPenalty
+    return stackHeight - nFilledRows + halfHeightPenalty + threeQuarterHeightPenalty
   },
 
   /**
-   * Returns the penalty incurred from having too many tall empty columns.
-   * @param {Map} tallEmptyColumns Maps column indices to the number of empty cells in the column
-   */
-  tallEmptyColumnsPenalty: tallEmptyColumns => {
-    let n = 0
-    tallEmptyColumns.forEach(v => {
-      if (v>3) n += 1
-    })
-    return Math.max(0, (n-1)*2)
-  },
-
-  /**
-   * Returns the number of blocks that are blocking line of sight of this column to the top of the playfield.
+   * Checks if the cell [i,j] in the stack has blocked line of sight to the top of the play field and
+   * Also checks if it is part of what is considered a tall empty column.
    * @param {int} i Column index to start counting from
    * @param {int} j Row index to start counting from, non inclusive
+   * @param {Array} stack 2D array that keeps track of Tetromino segments that have been locked in place.
    */
-  countBlocked: (i, j, stack) => {
-    let nBlocked = 0
+  checkColumn: (i, j, stack) => {
+    let isBlocked = false
+    let tallEmptyColumnSize = 0
     for(let j2=j-1; j2>=0; j2--) {
       if(stack[j2][i]!=null) {
-        nBlocked += 1
+        isBlocked = true
+        break
+      }
+      if((i==0 || stack[j2][i-1]!=null) && (i==stack[j2].length-1 || stack[j2][i+1]!=null)) {
+        tallEmptyColumnSize += 1
       }
     }
-    return nBlocked
+    return [isBlocked, tallEmptyColumnSize>=3]
   },
 
   /**
@@ -97,6 +92,7 @@ const Scoring = {
    * Returns a PosSet of all cells in stack accessible from [i,j] via BFS.
    * @param {int} i Column index to start searching from
    * @param {int} j Row index to start searching from
+   * @param {Array} stack 2D array that keeps track of Tetromino segments that have been locked in place.
    */
   getEmptyPostions: (i, j, stack) => {
     const origin = Tetromino.Node(i, j)

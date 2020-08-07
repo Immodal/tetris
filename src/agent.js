@@ -27,7 +27,9 @@ const Agent = () => {
     
     agent.updateTarget(state)
 
-    if (agent.holdCurrent) {
+    if (agent.target==null) {
+      Game.updateCurrent(state.current.next(0,1), state)
+    } else if (agent.holdCurrent) {
       Game.holdPiece(state)
     } else if (state.current.i != agent.target.i || state.current.rot != agent.target.rot) {
       let p = state.current.next(agent.target.i - state.current.i, state.current.cons==Tetromino.I ? 1 : 0, agent.target.rot)
