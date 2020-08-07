@@ -140,6 +140,13 @@ const Game = {
   addPiece: (piece, stack) => piece.get().forEach(node => stack[node.j][node.i] = node.color),
 
   /**
+   * Removes a piece from the given stack.
+   * @param {Tetromino} piece The piece to add to the stack
+   * @param {Array} stack 2D array that keeps track of Tetromino segments that have been locked in place.
+   */
+  removePiece: (piece, stack) => piece.get().forEach(node => stack[node.j][node.i] = null),
+
+  /**
    * Clear all lines that have been filled in the given stack.
    * Returns true if any lines were cleared.
    * @param {Array} stack 2D array that keeps track of Tetromino segments that have been locked in place.

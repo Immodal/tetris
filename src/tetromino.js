@@ -3,7 +3,7 @@ const Tetromino = {
   /**
    * This is the base object used for each Tetromino
    */
-  Node: (i, j, color) => {
+  Node: (i, j, color=null) => {
     const node = {}
 
     node.i = i
@@ -19,6 +19,16 @@ const Tetromino = {
      * Returns true if node's components equal n's components
      */
     node.eq = n => node.i == n.i && node.j == n.j
+
+    /**
+     * Returns a new Node with the sum of node and n's components
+     */
+    node.sum = n => Tetromino.Node(node.i + n.i, node.j + n.j)
+
+    /**
+     * Returns a new Node with the difference of node and n's components
+     */
+    node.sub = n => Tetromino.Node(node.i - n.i, node.j - n.j)
 
     return node
   },

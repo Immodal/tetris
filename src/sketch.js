@@ -46,7 +46,7 @@ const sketch = ( p ) => {
     playerSelect.parent("#playerSelect")
     playerSelect.option("Human", HUMAN)
     playerSelect.option("AI", AI)
-    playerSelect.value(HUMAN)
+    playerSelect.value(AI)
     //playerSelect.changed(resetGame)
   }
 
@@ -58,6 +58,11 @@ const sketch = ( p ) => {
   const update = (force=false) => {
     if ((playerSelect.value()==HUMAN && p.millis() > updateTimer) || force) {
       updateTimer = p.millis() + updateDelay
+
+      if (playerSelect.value()==AI && state.current != null) {
+        state.current = Agent.getMove(state)
+      }
+
       if (!state.gameOver) state = Game.next(state)
     }
   }
@@ -85,24 +90,32 @@ const sketch = ( p ) => {
    * Key Pressed
    */
   p.keyPressed = () => {
-    if (playerSelect.value()==HUMAN) {
-      if (state.current != null) {
-        let piece = state.current
-        if (p.key == "w") Game.updateCurrent(piece.cw(state.stack), state)
-        else if (p.key == "s") update(true)
-        else if (p.key == "a") Game.updateCurrent(piece.left(state.stack), state)
-        else if (p.key == "d") Game.updateCurrent(piece.right(state.stack), state)
-        else if (p.key == "c") Game.holdPiece(state)
-      } 
-      if (state.ghost != null) {
-        if (p.key == " ") {
-          Game.updateCurrent(state.ghost, state)
-          update(true)
-        }
-      }
-    }
+    if (playerSelect.value()==HUMAN) P5KbInputs.human(p, state, update)
+    else if (playerSelect.value()==AI) P5KbInputs.ai(p, update)
   }
 }
 
+const P5KbInputs = {
+  human: (p, state, update) => {
+    if (state.current != null) {
+      let piece = state.current
+      if (p.key == "w") Game.updateCurrent(piece.cw(state.stack), state)
+      else if (p.key == "s") update(true)
+      else if (p.key == "a") Game.updateCurrent(piece.left(state.stack), state)
+      else if (p.key == "d") Game.updateCurrent(piece.right(state.stack), state)
+      else if (p.key == "c") Game.holdPiece(state)
+    } 
+    if (state.ghost != null) {
+      if (p.key == " ") {
+        if (state.current!=null) Game.updateCurrent(state.ghost, state)
+        update(true)
+      }
+    }
+  },
+
+  ai: (p, update) => {
+    if (p.key == " ") update(true)
+  }
+}
 
 let p5Instance = new p5(sketch);
