@@ -39,7 +39,7 @@ const sketch = ( p ) => {
    */
   const HUMAN = 0
   const AI = 1
-  let agent = Agent.Agent()
+  let agent = Agent()
   let playerSelect = null
   const initPlayerSelect = () => {
     playerSelect = p.createSelect()
