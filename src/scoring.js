@@ -5,7 +5,7 @@ const Scoring = {
     let stackHeight = 0
     let nHoles = 0
     let nBlocked = 0
-    let tallColumns = new Map()
+    let tallEmptyColumns = new Map()
     let nFilledRows = 0
 
     for(let j=stack.length-1; j>=0; j--) {
@@ -15,35 +15,57 @@ const Scoring = {
         if (stack[j][i]!=null) nFilled += 1
         // Holes
         else if (stack[j][i]==null && !emptySet.has(i, j)) nHoles += 1
-        // Blocked & tallColumns
+        // Blocked & tallEmptyColumns
         else if (stack[j][i]==null) {
           let blocked = Scoring.countBlocked(i, j, stack)
-          if (blocked>0) tallColumns.set(j, tallColumns.has(j) ? tallColumns.get(j)+1 : 1)
-          nBlocked += blocked
+          if (blocked==0) tallEmptyColumns.set(i, tallEmptyColumns.has(i) ? tallEmptyColumns.get(i)+1 : 1)
+          else nBlocked += blocked
         }
       }
       // Early Exit
       if (nFilled == 0) break
-      // Count rows that will be removed
+      // Track rows that will be removed
       else if (nFilled == stack[j].length) nFilledRows += 1
+      // Track height
       stackHeight += 1
     }
-
-    let nTallColumns = 0
-    tallColumns.forEach(v => {
-      if (v>=3) nTallColumns += 1
-    })
-    nTallColumns = nTallColumns>1
-
-    tallStackPenalty2 = Math.max(0, stackHeight - Math.floor(stack.length/2) - nFilledRows)
-    tallStackPenalty2 = Math.max(0, stackHeight - Math.floor(stack.length/2) - nFilledRows)
-
     Game.removePiece(piece, stack)
-    return 2*nHoles + 2*nBlocked + Math.max(0, (nTallColumns-1)*10) + stackHeight + tallStackPenalty2*10 - nFilledRows
+
+    let score = 0
+    score += 4*nHoles
+    score += 4*nBlocked
+    score += Scoring.tallEmptyColumnsPenalty(tallEmptyColumns)
+    score += Scoring.heightPenalty(stack.length, stackHeight, nFilledRows)
+    return score
   },
 
   /**
-   * Count the number of blocks that are blocking line of sight of this column to the top of the playfield.
+   * Returns the penalty incurred due to the height of the stack.
+   * @param {int} nj Number of rows in the playfield
+   * @param {int} stackHeight Height of the stack
+   * @param {int} nFilledRows Number of rows in the stack that have been completely filled
+   */
+  heightPenalty: (nj, stackHeight, nFilledRows) => {
+    let quarterHeightPenalty = Math.max(0, stackHeight - Math.floor(nj/4) - nFilledRows)
+    let halfHeightPenalty = Math.max(0, stackHeight - Math.floor(nj/4) - nFilledRows)*2
+
+    return stackHeight - nFilledRows + halfHeightPenalty + quarterHeightPenalty
+  },
+
+  /**
+   * Returns the penalty incurred from having too many tall empty columns.
+   * @param {Map} tallEmptyColumns Maps column indices to the number of empty cells in the column
+   */
+  tallEmptyColumnsPenalty: tallEmptyColumns => {
+    let n = 0
+    tallEmptyColumns.forEach(v => {
+      if (v>3) n += 1
+    })
+    return Math.max(0, (n-1)*2)
+  },
+
+  /**
+   * Returns the number of blocks that are blocking line of sight of this column to the top of the playfield.
    * @param {int} i Column index to start counting from
    * @param {int} j Row index to start counting from, non inclusive
    */
