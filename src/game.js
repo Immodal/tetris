@@ -44,12 +44,14 @@ const Game = {
         // Lock piece
         Game.addPiece(state.current, state.stack)
         state.justHeld = false
-        if (Game.clearLines(state.stack)) {
+        let nLinesCleared = Game.clearLines(state.stack)
+        if (nLinesCleared>0) {
           // If lines were cleared, use next update for gravity computation
           state.gravity = true
+          state.score += nLinesCleared
           Game.updateCurrent(null, state)
         } else {
-          // Of not, get new piece
+          // If not, get new piece
           let p = Game.getNextPiece(state)
           if (!p.isValid(state.stack)) {
             state.gameOver = true
@@ -72,6 +74,7 @@ const Game = {
    * 5. nextPieces - An Array of the next 3 Tetrominos that will be played.
    * 6. hold - Piece that is being temporarily held.
    * 7. gameOver - Boolean where true if no new pieces can spawn.
+   * 8. score - Number of lines cleared.
    * @param {int} ni Number of columns in the playfield
    * @param {int} nj Number of rows in the playfield
    */
@@ -82,7 +85,9 @@ const Game = {
       justHeld: false,
       gravity: false,
       stack: utils.mkFill(ni, nj, null),
-      nextPieces: Game.getRandomPieces()
+      nextPieces: Game.getRandomPieces(),
+      gameOver: false,
+      score: 0
     }
     // Add current and ghost
     Game.updateCurrent(Game.getNextPiece(newState), newState)
@@ -152,16 +157,16 @@ const Game = {
    * @param {Array} stack 2D array that keeps track of Tetromino segments that have been locked in place.
    */
   clearLines: stack => {
-    let linesCleared = false
+    let nLines = 0
     for(let j=stack.length-1; j>=0; j--) {
       let nFilled = Game.countFilled(stack[j])
       if (nFilled == 0) break
       else if (nFilled == stack[0].length) {
         stack[j].forEach((_, i) => stack[j][i] = null)
-        linesCleared = true
+        nLines += 1
       }
     }
-    return linesCleared
+    return nLines
   },
 
   /**

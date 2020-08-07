@@ -1,6 +1,9 @@
 const sketch = ( p ) => {
 
-  const updateDelay = 50
+  const UPDATE_DELAY_INITIAL = 50
+  const UPDATE_DELAY_MIN = 50
+  const UPDATE_DELAY_MAX = 1000
+
   const blockSize = 20
   const topMargin = 50
   const nI = 10
@@ -38,17 +41,40 @@ const sketch = ( p ) => {
    * Player Selection Elements
    */
   const HUMAN = 0
-  const AI = 1
+  const RBA = 1
   let agent = Agent()
   let playerSelect = null
   const initPlayerSelect = () => {
     playerSelect = p.createSelect()
     playerSelect.style('font-size', '13px')
     playerSelect.parent("#playerSelect")
+    playerSelect.option("Rule Based Agent", RBA)
     playerSelect.option("Human", HUMAN)
-    playerSelect.option("AI", AI)
-    playerSelect.value(AI)
-    //playerSelect.changed(resetGame)
+    playerSelect.value(RBA)
+  }
+
+  let score = 0
+  let scoreCounter = null
+  const initScoreCounter = () => {
+    scoreCounter = p.createSpan(`${score}`)
+    scoreCounter.parent("#scoreCount")
+  }
+  const updateScore = s => {
+    score = s
+    scoreCounter.html(score)
+  }
+
+  /**
+   * Game Speed Elements
+   */
+  let gameSpeedLabel = null
+  let gameSpeedSlider = null
+  const initGameSpeedSlider = () => {
+    gameSpeedSlider = p.createSlider(UPDATE_DELAY_MIN, UPDATE_DELAY_MAX, UPDATE_DELAY_INITIAL)
+    gameSpeedLabel = p.createSpan(`${gameSpeedSlider.value()}`)
+    gameSpeedLabel.parent("#gameSpeedLbl")
+    gameSpeedSlider.parent('#gameSpeed')
+    gameSpeedSlider.changed(() => gameSpeedLabel.html(gameSpeedSlider.value()))
   }
 
   /**
@@ -58,14 +84,18 @@ const sketch = ( p ) => {
   let state = Game.getNewState(nI, nJ)
   const update = (force=false) => {
     if (p.millis() > updateTimer || force) {
-      updateTimer = p.millis() + updateDelay
+      updateTimer = p.millis() + gameSpeedSlider.value()
 
       if (!state.gameOver) {
-        if (playerSelect.value()==AI && state.current != null) {
+        if (playerSelect.value()==RBA && state.current != null) {
           agent.move(state)
           state = Game.next(state, false)
         } else Game.next(state)
+      } else {
+        state = Game.getNewState(nI, nJ)
       }
+
+      updateScore(state.score)
     }
   }
 
@@ -74,7 +104,9 @@ const sketch = ( p ) => {
    */
   p.setup = () => {
     initCanvas()
+    initGameSpeedSlider()
     initPlayerSelect()
+    initScoreCounter()
   }
 
   /**
@@ -93,7 +125,7 @@ const sketch = ( p ) => {
    */
   p.keyPressed = () => {
     if (playerSelect.value()==HUMAN) P5KbInputs.human(p, state, update)
-    else if (playerSelect.value()==AI) P5KbInputs.ai(p, update)
+    // else if (playerSelect.value()==RBA) P5KbInputs.rba(p, update)
   }
 }
 
@@ -114,10 +146,11 @@ const P5KbInputs = {
       }
     }
   },
-
-  ai: (p, update) => {
+  /*
+  rba: (p, update) => {
     if (p.key == " ") update(true)
   }
+  */
 }
 
 let p5Instance = new p5(sketch);
