@@ -25,10 +25,10 @@ const Agent = {
 
     agent.move = state => {
       if (state.current==null) return null
-      if (agent.target==null || agent.currentIsUnexpected(state.current)) agent.updateTarget(state)
+      
+      agent.updateTarget(state)
 
       if (agent.holdCurrent) {
-        agent.holdCurrent = false
         Game.holdPiece(state)
       } else if (state.current.i != agent.target.i || state.current.rot != agent.target.rot) {
         let p = state.current.next(agent.target.i - state.current.i, 0, agent.target.rot)

@@ -60,9 +60,12 @@ const sketch = ( p ) => {
     if (p.millis() > updateTimer || force) {
       updateTimer = p.millis() + updateDelay
 
-      if (playerSelect.value()==AI && state.current != null) agent.move(state)
-
-      if (!state.gameOver) state = Game.next(state)
+      if (!state.gameOver) {
+        if (playerSelect.value()==AI && state.current != null) {
+          agent.move(state)
+          state = Game.next(state, false)
+        } else Game.next(state)
+      }
     }
   }
 
