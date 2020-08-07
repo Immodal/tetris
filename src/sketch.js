@@ -18,20 +18,20 @@ const sketch = ( p ) => {
   let npf = null
   let hpf = null
   const initCanvas = () => {
-    canvas = p.createCanvas(600, 500)
+    canvas = p.createCanvas(500, 475)
     canvas.parent("#cv")
     pf = Field.Play(p, 
       canvas.width/2-blockSize*nI/2, topMargin,
       blockSize*nI, blockSize*nJ,
-      nI, nJ)
+      nI, nJ, "Play Field")
     npf = Field.NextPieces(p, 
       pf.x + pf.w + blockSize, topMargin,
       blockSize*npfI, blockSize*npfJ,
-      npfI, npfJ)
+      npfI, npfJ, "Next Piece")
     hpf = Field.HoldPiece(p,
       pf.x - blockSize -  blockSize*hpfI, topMargin,
       blockSize*hpfI, blockSize*hpfJ,
-      hpfI, hpfJ)
+      hpfI, hpfJ, "Holding")
   }
 
   /**

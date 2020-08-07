@@ -1,5 +1,5 @@
 const Field = {
-  Base: (p, x, y, w, h, ni, nj) => {
+  Base: (p, x, y, w, h, ni, nj, title="") => {
     const field = {}
   
     field.p = p
@@ -9,12 +9,21 @@ const Field = {
     field.h = h
     field.ni = ni
     field.nj = nj
+    field.title = title
+    field.titleYOffset = 15
+    field.titleSize = 20
   
     field.toX = i => Math.floor(i * field.w / field.ni)
     field.toY = j => Math.floor(j * field.h / field.nj)
   
     field.toXAbs = i => field.toX(i) + field.x
     field.toYAbs = j => field.toX(j) + field.y
+
+    field.drawTitle = () => {
+      p.textSize(field.titleSize)
+      p.textAlign(p.CENTER, p.CENTER)
+      p.text(field.title, field.x + field.w/2, field.y - field.titleYOffset)
+    }
   
     field.fillBackground = () => {
       field.p.fill(0)
@@ -42,11 +51,12 @@ const Field = {
     return field
   }, 
 
-  Play: (p, x, y, w, h, ni, nj) => {
-    const pf = Field.Base(p, x, y, w, h, ni, nj)
+  Play: (p, x, y, w, h, ni, nj, title="") => {
+    const pf = Field.Base(p, x, y, w, h, ni, nj, title)
   
     pf.draw = state => {
       pf.fillBackground()
+      pf.drawTitle()
       if (state.current!=null) pf.drawNodes(state.current.get())
       if (state.ghost!=null) pf.drawNodes(state.ghost.get(), true)
       pf.drawStack(state.stack)
@@ -69,11 +79,12 @@ const Field = {
     return pf
   },
 
-  NextPieces: (p, x, y, w, h, ni, nj) => {
-    const npf = Field.Base(p, x, y, w, h, ni, nj)
+  NextPieces: (p, x, y, w, h, ni, nj, title="") => {
+    const npf = Field.Base(p, x, y, w, h, ni, nj, title)
   
     npf.draw = state => {
       npf.fillBackground()
+      npf.drawTitle()
       let iOffset = 1 - Game.SPAWN_LOC[0]
       let jOffset = 1 - Game.SPAWN_LOC[1]
       for(let k=0; k<Game.PREVIEW_LIMIT; k++) {
@@ -88,11 +99,12 @@ const Field = {
     return npf
   },
 
-  HoldPiece: (p, x, y, w, h, ni, nj) => {
-    const hpf = Field.Base(p, x, y, w, h, ni, nj)
+  HoldPiece: (p, x, y, w, h, ni, nj, title="") => {
+    const hpf = Field.Base(p, x, y, w, h, ni, nj, title)
   
     hpf.draw = state => {
       hpf.fillBackground()
+      hpf.drawTitle()
       if(state.hold!=null) {
         let iOffset = 1 - Game.SPAWN_LOC[0]
         let jOffset = 1 - Game.SPAWN_LOC[1]
