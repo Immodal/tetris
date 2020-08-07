@@ -107,7 +107,9 @@ const Agent = {
     let stackHeight = 0
     let nHoles = 0
     let nBlocked = 0
+    let tallColumns = new Map()
     let nFilledRows = 0
+
     for(let j=stack.length-1; j>=0; j--) {
       let nFilled = 0
       for(let i=stack[j].length-1; i>=0; i--) {
@@ -115,11 +117,14 @@ const Agent = {
         if (stack[j][i]==null && !emptySet.has(i, j)) nHoles += 1
         // Blocked
         else if (stack[j][i]==null) {
+          let blocked = false
           for(let j2=j-1; j2>=0; j2--) {
             if(stack[j2][i]!=null) {
               nBlocked += 1
+              blocked = true
             }
           }
+          if (!blocked) tallColumns.set(j, tallColumns.has(j) ? tallColumns.get(j)+1 : 1)
         }
         // Filled
         else if (stack[j][i]!=null) nFilled += 1
@@ -128,8 +133,17 @@ const Agent = {
       else if (nFilled == stack[j].length) nFilledRows += 1
       stackHeight += 1
     }
+
+    let nTallColumns = 0
+    tallColumns.forEach(v => {
+      if (v>=3) nTallColumns += 1
+    })
+    nTallColumns = nTallColumns>1
+
+    tallStackPenalty = Math.max(0, stackHeight - Math.floor(stack.length/2) - nFilledRows)
+
     Game.removePiece(piece, stack)
-    return 2*nHoles + stackHeight + 2*nBlocked - nFilledRows
+    return 2*nHoles + 2*nBlocked + Math.max(0, (nTallColumns-1)*10) + stackHeight + tallStackPenalty*10 - nFilledRows
   },
 
 
