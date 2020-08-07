@@ -46,7 +46,7 @@ const Scoring = {
    * @param {int} nFilledRows Number of rows in the stack that have been completely filled
    */
   heightPenalty: (nj, stackHeight, nFilledRows) => {
-    let halfHeightPenalty = Math.max(0, stackHeight - Math.floor(nj/2) - nFilledRows)*2
+    let halfHeightPenalty = Math.max(0, stackHeight - Math.floor(nj/2) - nFilledRows)*4
     let threeQuarterHeightPenalty = Math.max(0, stackHeight - Math.floor(3*nj/4) - nFilledRows)*2
 
     return stackHeight - nFilledRows + halfHeightPenalty + threeQuarterHeightPenalty
