@@ -31,7 +31,7 @@ const Game = {
    * Update and Return the given state in place to the next time step.
    * @param {Object} state The state object
    */
-  next: state => {
+  next: (state, auto=true) => {
     if (state.gravity) {
       // Process Gravity
       Game.processGravity(state.stack)
@@ -56,7 +56,7 @@ const Game = {
             Game.updateCurrent(p, state)
           } else Game.updateCurrent(p, state)
         }
-      } else state.current = nextPiece
+      } else if(auto) state.current = nextPiece
     }
     return state
   },

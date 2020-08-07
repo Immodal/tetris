@@ -1,6 +1,6 @@
 const sketch = ( p ) => {
 
-  const updateDelay = 500
+  const updateDelay = 50
   const blockSize = 20
   const topMargin = 50
   const nI = 10
@@ -39,6 +39,7 @@ const sketch = ( p ) => {
    */
   const HUMAN = 0
   const AI = 1
+  let agent = Agent.Agent()
   let playerSelect = null
   const initPlayerSelect = () => {
     playerSelect = p.createSelect()
@@ -56,12 +57,10 @@ const sketch = ( p ) => {
   let updateTimer = 0
   let state = Game.getNewState(nI, nJ)
   const update = (force=false) => {
-    if ((playerSelect.value()==HUMAN && p.millis() > updateTimer) || force) {
+    if (p.millis() > updateTimer || force) {
       updateTimer = p.millis() + updateDelay
 
-      if (playerSelect.value()==AI && state.current != null) {
-        state.current = Agent.getMove(state)
-      }
+      if (playerSelect.value()==AI && state.current != null) agent.move(state)
 
       if (!state.gameOver) state = Game.next(state)
     }

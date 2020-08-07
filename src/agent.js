@@ -1,48 +1,44 @@
 const Agent = {
-  getMove: state => {
-    let endPoints = Agent.getEndPoints(state.current, state.stack)
-    let altEndpoints = null
-    if (state.hold==null) altEndpoints = Agent.getEndPoints(state.nextPieces[0], state.stack)
-    else altEndpoints = Agent.getEndPoints(state.hold, state.stack)
+  Agent: () => {
+    const agent = {}
 
-    let minScore = 1
-    let minPiece = null 
-    for (let i=0; i<endPoints.length; i++) {
-      let currentScore = Agent.scoreStack(endPoints[i], state.stack)
-      if (minPiece==null || currentScore<minScore) {
-        minScore = currentScore
-        minPiece = endPoints[i]
+    agent.target = null
+    agent.holdCurrent = false
+
+    agent.updateTarget = state => {
+      let endPoints = Agent.getEndPoints(state.current, state.stack)
+      let altEndpoints = null
+      if (state.hold==null) altEndpoints = Agent.getEndPoints(state.nextPieces[0], state.stack)
+      else altEndpoints = Agent.getEndPoints(state.hold, state.stack)
+  
+      let mainRes = Agent.getBestEndpoint(endPoints, state.stack)
+      let altRes = Agent.getBestEndpoint(altEndpoints, state.stack)
+
+      if (altRes[0]<mainRes[0]) {
+        agent.holdCurrent = true
+        agent.target = altRes[1]
+      } else {
+        agent.holdCurrent = false
+        agent.target = mainRes[1]
       }
     }
 
-    let isAlt = false
-    for (let i=0; i<altEndpoints.length; i++) {
-      let currentScore = Agent.scoreStack(altEndpoints[i], state.stack)
-      if (minPiece==null || currentScore<minScore) {
-        minScore = currentScore
-        minPiece = altEndpoints[i]
-        isAlt = true
-      }
+    agent.move = state => {
+      if (state.current==null) return null
+      if (agent.target==null || agent.currentIsUnexpected(state.current)) agent.updateTarget(state)
+
+      if (agent.holdCurrent) {
+        agent.holdCurrent = false
+        Game.holdPiece(state)
+      } else if (state.current.i != agent.target.i || state.current.rot != agent.target.rot) {
+        let p = state.current.next(agent.target.i - state.current.i, 0, agent.target.rot)
+        Game.updateCurrent(p, state)
+      } else Game.updateCurrent(state.ghost, state)
     }
 
-    if (isAlt) {
-      Game.holdPiece(state)
-    }
+    agent.currentIsUnexpected = current => current.cons != agent.target.cons || current.j > agent.target.j
 
-    return minPiece
-  },
-
-  getEndPoints: (piece, stack) => {
-    let endPoints = []
-    for(let r=0; r<piece.rotations.length; r++) {
-      for(let i=-2; i<stack[0].length; i++) {
-        let p = piece.cons(i, 0, r)
-        let ghost = Game.getGhost(p, stack)
-        //if (p.isValid(stack)) 
-        if (ghost != null) endPoints.push(ghost)
-      }
-    }
-    return endPoints
+    return agent
   },
 
   PosSet: () => {
@@ -77,6 +73,32 @@ const Agent = {
     }
 
     return closed
+  },
+
+  getEndPoints: (piece, stack) => {
+    let endPoints = []
+    for(let r=0; r<piece.rotations.length; r++) {
+      for(let i=-2; i<stack[0].length; i++) {
+        let p = piece.cons(i, 0, r)
+        let ghost = Game.getGhost(p, stack)
+        //if (p.isValid(stack)) 
+        if (ghost != null) endPoints.push(ghost)
+      }
+    }
+    return endPoints
+  },
+
+  getBestEndpoint: (endPoints, stack) => {
+    let minScore = 99999
+    let minPiece = null 
+    for (let i=0; i<endPoints.length; i++) {
+      let currentScore = Agent.scoreStack(endPoints[i], stack)
+      if (minPiece==null || currentScore<minScore) {
+        minScore = currentScore
+        minPiece = endPoints[i]
+      }
+    }
+    return [minScore, minPiece]
   },
   
   scoreStack: (piece, stack) => {
