@@ -2,11 +2,14 @@
 <script src="tinytest.js"></script>
 <script src="../src/utils.js"></script>
 <script src="../src/tetromino.js"></script>
+<script src="../src/game.js"></script>
 <!--<script src="../src/sketch.js"></script> -->
 <script src="./tetromino-tests.js"></script>
+<script src="./game-tests.js"></script>
 <script>
   let testObj = {}
   Object.assign(testObj, TetrominoTests)
+  Object.assign(testObj, GameTests)
   // Run
   tests(testObj)
 </script>

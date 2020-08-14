@@ -129,8 +129,8 @@ const Game = {
         let temp = state.current
         Game.updateCurrent(state.hold, state)
         state.hold = temp
-        state.justHeld = true
       }
+      state.justHeld = true
       state.hold.i = state.hold.cons==Tetromino.I ? Game.SPAWN_LOC[0] :  Game.SPAWN_LOC[0]
       state.hold.j = state.hold.cons==Tetromino.I ? Game.SPAWN_LOC[1]-1 :  Game.SPAWN_LOC[1]
       state.hold.rot = 0
