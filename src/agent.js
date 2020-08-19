@@ -1,6 +1,9 @@
-const Agent = () => {
+const Agent = (nHolesConst, nHolesMult, nBlockedConst, nBlockMult, nTallEmptyColsConst, nTallEmptyColsMult,
+                halfHeightRowMult, threeQuarterHeightRowMult)  => {
   const agent = {}
 
+  agent.score = Scoring.score(nHolesConst, nHolesMult, nBlockedConst, nBlockMult, 
+    nTallEmptyColsConst, nTallEmptyColsMult,halfHeightRowMult, threeQuarterHeightRowMult) 
   agent.target = null
   agent.holdCurrent = false
 
@@ -16,8 +19,8 @@ const Agent = () => {
     else altEndpoints = Scoring.getEndPoints(state.hold, state.stack)
 
     // Score all endpoints
-    let mainRes = Scoring.getBestEndpoint(endPoints, state.stack)
-    let altRes = Scoring.getBestEndpoint(altEndpoints, state.stack)
+    let mainRes = Scoring.getBestEndpoint(endPoints, state.stack, agent.score)
+    let altRes = Scoring.getBestEndpoint(altEndpoints, state.stack, agent.score)
 
     // Choose piece + location with the lowest score (least penalties)
     if (altRes[0]<mainRes[0]) {

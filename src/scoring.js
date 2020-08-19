@@ -1,5 +1,6 @@
 const Scoring = {
-  score: (piece, stack) => {
+  score: (nHolesConst, nHolesMult, nBlockedConst, nBlockMult, nTallEmptyColsConst, nTallEmptyColsMult,
+          halfHeightRowMult, threeQuarterHeightRowMult) => (piece, stack) => {
     Game.addPiece(piece, stack)
     let emptySet = Scoring.getEmptyPostions(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1], stack)
     let stackHeight = 0
@@ -32,24 +33,15 @@ const Scoring = {
     Game.removePiece(piece, stack)
 
     let score = 0
-    score += 5*nHoles
-    score += 5*nBlocked
-    score += Math.max(0, (nTallEmptyColumns-1)*6)
-    score += Scoring.heightPenalty(stack.length, stackHeight, nFilledRows)
+    score += Math.max(0, (nHoles + nHolesConst)*nHolesMult)
+    score += Math.max(0, (nBlocked + nBlockedConst)*nBlockMult)
+    score += Math.max(0, (nTallEmptyColumns + nTallEmptyColsConst)*nTallEmptyColsMult)
+
+    let halfHeightPenalty = Math.max(0, stackHeight - Math.floor(stack.length/2) - nFilledRows)*halfHeightRowMult
+    let threeQuarterHeightPenalty = Math.max(0, stackHeight - Math.floor(3*stack.length/4) - nFilledRows)*threeQuarterHeightRowMult
+    score += stackHeight - nFilledRows + halfHeightPenalty + threeQuarterHeightPenalty
+
     return score
-  },
-
-  /**
-   * Returns the penalty incurred due to the height of the stack.
-   * @param {int} nj Number of rows in the playfield
-   * @param {int} stackHeight Height of the stack
-   * @param {int} nFilledRows Number of rows in the stack that have been completely filled
-   */
-  heightPenalty: (nj, stackHeight, nFilledRows) => {
-    let halfHeightPenalty = Math.max(0, stackHeight - Math.floor(nj/2) - nFilledRows)*4
-    let threeQuarterHeightPenalty = Math.max(0, stackHeight - Math.floor(3*nj/4) - nFilledRows)*2
-
-    return stackHeight - nFilledRows + halfHeightPenalty + threeQuarterHeightPenalty
   },
 
   /**
@@ -140,11 +132,11 @@ const Scoring = {
    * @param {Array} endPoints Array of candidate endpoints to be added to stack and scored
    * @param {Array} stack 2D array that keeps track of Tetromino segments that have been locked in place.
    */
-  getBestEndpoint: (endPoints, stack) => {
+  getBestEndpoint: (endPoints, stack, score) => {
     let minScore = 99999
     let minPiece = null 
     for (let i=0; i<endPoints.length; i++) {
-      let currentScore = Scoring.score(endPoints[i], stack)
+      let currentScore = score(endPoints[i], stack)
       if (minPiece==null || currentScore<minScore) {
         minScore = currentScore
         minPiece = endPoints[i]

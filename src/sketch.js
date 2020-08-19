@@ -42,7 +42,7 @@ const sketch = ( p ) => {
    */
   const HUMAN = 0
   const RBA = 1
-  let agent = Agent()
+  let agent = Agent(0, 5, 0, 5, -1, 6, 4, 2)
   let playerSelect = null
   const initPlayerSelect = () => {
     playerSelect = p.createSelect()
