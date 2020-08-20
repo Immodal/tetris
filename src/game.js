@@ -32,7 +32,8 @@ const Game = {
    * @param {Object} state The state object
    */
   next: (state, auto=true) => {
-    if (state.gravity) {
+    if (state.gameOver) return state
+    else if (state.gravity) {
       // Process Gravity
       Game.processGravity(state.stack)
       state.gravity = false
@@ -60,7 +61,6 @@ const Game = {
         }
       } else if(auto) state.current = nextPiece
     }
-    return state
   },
 
   /**
@@ -78,16 +78,17 @@ const Game = {
    * @param {int} ni Number of columns in the playfield
    * @param {int} nj Number of rows in the playfield
    */
-  getNewState: (ni, nj) => {
+  getNewState: (ni, nj, rng=new Math.seedrandom()) => {
     // Create a new state
     let newState = {
       hold: null,
       justHeld: false,
       gravity: false,
       stack: utils.mkFill(ni, nj, null),
-      nextPieces: Game.getRandomPieces(),
+      nextPieces: Game.getRandomPieces(rng),
       gameOver: false,
-      score: 0
+      score: 0,
+      rng: rng
     }
     // Add current and ghost
     Game.updateCurrent(Game.getNextPiece(newState), newState)
@@ -212,12 +213,12 @@ const Game = {
   /**
    * Returns a random 7 long sequence of Tetrominos initialized to Game.SPAWN_LOC
    */
-  getRandomPieces: () => {
+  getRandomPieces: rng => {
     let seq = Game.tetrominoFactories
       .map(cons => cons==Tetromino.I ? 
           cons(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1]-1) : 
           cons(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1]))
-    utils.shuffle(seq)
+    utils.shuffle(seq, rng)
     return seq
   },
 }

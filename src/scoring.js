@@ -1,6 +1,47 @@
 const Scoring = {
-  score: (nHolesConst, nHolesMult, nBlockedConst, nBlockMult, nTallEmptyColsConst, nTallEmptyColsMult,
-          halfHeightRowMult, threeQuarterHeightRowMult) => (piece, stack) => {
+  Weights: (nHolesConst=0, nHolesMult=0, 
+            nBlockedConst=0, nBlockMult=0, 
+            nTallEmptyColsConst=0, nTallEmptyColsMult=0,
+            halfHeightRowMult=0, threeQuarterHeightRowMult=0) => {
+    const weights = {}
+
+    weights.values = []
+
+    weights.values.push(nHolesConst)
+    weights.nHolesConst = () => weights.values[0]
+    weights.values.push(nHolesMult)
+    weights.nHolesMult = () => weights.values[1]
+
+    weights.values.push(nBlockedConst)
+    weights.nBlockedConst = () => weights.values[2]
+    weights.values.push(nBlockMult)
+    weights.nBlockMult = () => weights.values[3]
+
+    weights.values.push(nTallEmptyColsConst)
+    weights.nTallEmptyColsConst = () => weights.values[4]
+    weights.values.push(nTallEmptyColsMult)
+    weights.nTallEmptyColsMult = () => weights.values[5]
+
+    weights.values.push(halfHeightRowMult)
+    weights.halfHeightRowMult = () => weights.values[6]
+
+    weights.values.push(threeQuarterHeightRowMult)
+    weights.threeQuarterHeightRowMult = () => weights.values[7]
+
+    return weights
+  },
+
+  getRandomWeights: (rng=new Math.seedrandom()) => {
+    return Scoring.Weights(
+      utils.randFloat(0, 10), rng()>0.5 ? rng() : utils.randFloat(0, 10, rng),
+      utils.randFloat(0, 10), rng()>0.5 ? rng() : utils.randFloat(0, 10, rng),
+      utils.randFloat(0, 10), rng()>0.5 ? rng() : utils.randFloat(0, 10, rng),
+      rng()>0.5 ? rng() : utils.randFloat(0, 10, rng),
+      rng()>0.5 ? rng() : utils.randFloat(0, 10, rng),
+    )
+  },
+
+  score: (piece, stack, weights) => {
     Game.addPiece(piece, stack)
     let emptySet = Scoring.getEmptyPostions(Game.SPAWN_LOC[0], Game.SPAWN_LOC[1], stack)
     let stackHeight = 0
@@ -33,12 +74,12 @@ const Scoring = {
     Game.removePiece(piece, stack)
 
     let score = 0
-    score += Math.max(0, (nHoles + nHolesConst)*nHolesMult)
-    score += Math.max(0, (nBlocked + nBlockedConst)*nBlockMult)
-    score += Math.max(0, (nTallEmptyColumns + nTallEmptyColsConst)*nTallEmptyColsMult)
+    score += Math.max(0, (nHoles + weights.nHolesConst())*weights.nHolesMult())
+    score += Math.max(0, (nBlocked + weights.nBlockedConst())*weights.nBlockMult())
+    score += Math.max(0, (nTallEmptyColumns + weights.nTallEmptyColsConst())*weights.nTallEmptyColsMult())
 
-    let halfHeightPenalty = Math.max(0, stackHeight - Math.floor(stack.length/2) - nFilledRows)*halfHeightRowMult
-    let threeQuarterHeightPenalty = Math.max(0, stackHeight - Math.floor(3*stack.length/4) - nFilledRows)*threeQuarterHeightRowMult
+    let halfHeightPenalty = Math.max(0, stackHeight - Math.floor(stack.length/2) - nFilledRows)*weights.halfHeightRowMult()
+    let threeQuarterHeightPenalty = Math.max(0, stackHeight - Math.floor(3*stack.length/4) - nFilledRows)*weights.threeQuarterHeightRowMult()
     score += stackHeight - nFilledRows + halfHeightPenalty + threeQuarterHeightPenalty
 
     return score
@@ -132,11 +173,11 @@ const Scoring = {
    * @param {Array} endPoints Array of candidate endpoints to be added to stack and scored
    * @param {Array} stack 2D array that keeps track of Tetromino segments that have been locked in place.
    */
-  getBestEndpoint: (endPoints, stack, score) => {
+  getBestEndpoint: (endPoints, stack, weights) => {
     let minScore = 99999
     let minPiece = null 
     for (let i=0; i<endPoints.length; i++) {
-      let currentScore = score(endPoints[i], stack)
+      let currentScore = Scoring.score(endPoints[i], stack, weights)
       if (minPiece==null || currentScore<minScore) {
         minScore = currentScore
         minPiece = endPoints[i]

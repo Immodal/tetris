@@ -42,7 +42,7 @@ const sketch = ( p ) => {
    */
   const HUMAN = 0
   const RBA = 1
-  let agent = Agent(0, 5, 0, 5, -1, 6, 4, 2)
+  let agent = Agent(Scoring.Weights(0, 5, 0, 5, -1, 6, 4, 2))
   let playerSelect = null
   const initPlayerSelect = () => {
     playerSelect = p.createSelect()
@@ -87,9 +87,9 @@ const sketch = ( p ) => {
       updateTimer = p.millis() + gameSpeedSlider.value()
 
       if (!state.gameOver) {
-        if (playerSelect.value()==RBA && state.current != null) {
+        if (playerSelect.value()==RBA) {
           agent.move(state)
-          state = Game.next(state, false)
+          Game.next(state, false)
         } else Game.next(state)
       } else {
         state = Game.getNewState(nI, nJ)
