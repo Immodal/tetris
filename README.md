@@ -1,3 +1,10 @@
 # Tetris
 
-This is the repo for my P5JS app that attempts to create intelligent agents that play the game. Check it out by following the link in the About section!
+This is P5JS app that attempts to create intelligent agents that play the game.
+
+The app can be found here: https://immodal.github.io/tetris/
+
+<p align="center">
+  <img src="readme/tetris.gif" alt="tetris"/>
+</p>
+<p align="center">Figure 1: The agent playing Tetris</p>
